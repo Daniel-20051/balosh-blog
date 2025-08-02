@@ -134,7 +134,7 @@ const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => onEdit(blog.id)}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors"
                       >
                         <svg
                           className="w-4 h-4"
@@ -152,7 +152,7 @@ const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
                       </button>
                       <button
                         onClick={() => onDelete(blog.id)}
-                        className="text-gray-400 hover:text-red-600 transition-colors"
+                        className="cursor-pointer text-gray-400 hover:text-red-600 transition-colors"
                       >
                         <svg
                           className="w-4 h-4"

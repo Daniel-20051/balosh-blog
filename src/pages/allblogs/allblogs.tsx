@@ -195,8 +195,6 @@ const AllBlogs: React.FC = () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    console.log("Deleting blog:", { id });
-
     // Remove the blog from the list
     setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
   };

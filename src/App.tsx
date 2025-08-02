@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./layouts/layout";
 import LoginPage from "./pages/login/login";
+import AccessDenied from "./pages/access-denied/AccessDenied";
 import Dashboard from "./pages/dashboard/dashboard";
 import NewBlog from "./pages/newblog/newblog";
 import AllBlogs from "./pages/allblogs/allblogs";
@@ -21,6 +22,7 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
 
           {/* Protected Routes */}
           <Route
