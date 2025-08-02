@@ -5,7 +5,7 @@ const AccessDenied: React.FC = () => {
   const navigate = useNavigate();
 
   const handleGoToLogin = () => {
-    navigate("/login");
+    navigate("/");
   };
 
   return (

@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // Clear authentication data
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   const handleSidebarClose = () => {
