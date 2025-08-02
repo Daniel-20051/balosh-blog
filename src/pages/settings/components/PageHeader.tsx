@@ -6,16 +6,18 @@ interface PageHeaderProps {
 
 const PageHeader: React.FC<PageHeaderProps> = ({ onSaveChanges }) => {
   return (
-    <div className="flex justify-between items-start">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Settings
+        </h1>
+        <p className="text-gray-600 mt-2 text-sm sm:text-base">
           Manage your profile information and preferences
         </p>
       </div>
       <button
         onClick={onSaveChanges}
-        className="bg-[#f88326] text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-[#e6761f] transition-colors"
+        className="bg-[#f88326] text-white px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start space-x-2 hover:bg-[#e6761f] transition-colors w-full sm:w-auto"
       >
         <svg
           className="w-5 h-5"

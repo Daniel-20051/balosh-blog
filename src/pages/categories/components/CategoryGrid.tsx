@@ -78,7 +78,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
               <div className="absolute top-4 right-4 flex space-x-2">
                 <button
                   onClick={() => onEdit(category.id)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <svg
                     className="w-4 h-4"
@@ -96,7 +96,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
                 </button>
                 <button
                   onClick={() => onDelete(category.id)}
-                  className="text-gray-400 hover:text-red-600 transition-colors"
+                  className="cursor-pointer text-gray-400 hover:text-red-600 transition-colors"
                 >
                   <svg
                     className="w-4 h-4"

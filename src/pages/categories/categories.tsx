@@ -1,62 +1,44 @@
+import React, { useState } from "react";
 import PageHeader from "./components/PageHeader";
 import SummaryCards from "./components/SummaryCards";
 import CategoryGrid from "./components/CategoryGrid";
+import AddCategoryModal from "./components/AddCategoryModal";
+import EditCategoryModal from "./components/EditCategoryModal";
+import DeleteCategoryModal from "./components/DeleteCategoryModal";
 
 const Categories: React.FC = () => {
-  // Mock data for summary cards
-  const summaryCards = [
-    {
-      title: "Total Categories",
-      value: "12",
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-          />
-        </svg>
-      ),
-      bgColor: "bg-blue-100",
-      iconColor: "text-blue-600",
-    },
-    {
-      title: "Most Popular",
-      value: "Technology",
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-          />
-        </svg>
-      ),
-      bgColor: "bg-green-100",
-      iconColor: "text-green-600",
-    },
-    {
-      title: "Uncategorized Posts",
-      value: "8",
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
-      ),
-      bgColor: "bg-orange-100",
-      iconColor: "text-orange-600",
-    },
-  ];
-
-  // Mock data for categories
-  const categories = [
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<{
+    id: number;
+    name: string;
+    description: string;
+    postCount: number;
+    status: "active" | "inactive";
+    icon: React.ReactNode;
+    iconBgColor: string;
+  } | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingCategory, setDeletingCategory] = useState<{
+    id: number;
+    name: string;
+    description: string;
+    postCount: number;
+    status: "active" | "inactive";
+    icon: React.ReactNode;
+    iconBgColor: string;
+  } | null>(null);
+  const [categories, setCategories] = useState<
+    Array<{
+      id: number;
+      name: string;
+      description: string;
+      postCount: number;
+      status: "active" | "inactive";
+      icon: React.ReactNode;
+      iconBgColor: string;
+    }>
+  >([
     {
       id: 1,
       name: "Technology",
@@ -165,22 +147,164 @@ const Categories: React.FC = () => {
       ),
       iconBgColor: "bg-red-500",
     },
+  ]);
+
+  // Mock data for summary cards
+  const summaryCards = [
+    {
+      title: "Total Categories",
+      value: "12",
+      icon: (
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      ),
+      bgColor: "bg-blue-100",
+      iconColor: "text-blue-600",
+    },
+    {
+      title: "Most Popular",
+      value: "Technology",
+      icon: (
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+          />
+        </svg>
+      ),
+      bgColor: "bg-green-100",
+      iconColor: "text-green-600",
+    },
+    {
+      title: "Uncategorized Posts",
+      value: "8",
+      icon: (
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+          />
+        </svg>
+      ),
+      bgColor: "bg-orange-100",
+      iconColor: "text-orange-600",
+    },
   ];
 
   const handleEdit = (id: number) => {
-    console.log("Edit category:", id);
-    // Navigate to edit page or open edit modal
+    const category = categories.find((cat) => cat.id === id);
+    if (category) {
+      setEditingCategory(category);
+      setIsEditModalOpen(true);
+    }
   };
 
   const handleDelete = (id: number) => {
-    console.log("Delete category:", id);
-    // Show confirmation dialog and delete category
+    const category = categories.find((cat) => cat.id === id);
+    if (category) {
+      setDeletingCategory(category);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleAddCategory = async (
+    name: string,
+    description: string,
+    icon: React.ReactNode,
+    iconBgColor: string
+  ) => {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Adding new category:", { name, description, iconBgColor });
+
+    // Create new category object
+    const newCategory = {
+      id: Math.max(...categories.map((cat) => cat.id)) + 1, // Generate new ID
+      name,
+      description,
+      postCount: 0, // New categories start with 0 posts
+      status: "active" as const,
+      icon,
+      iconBgColor,
+    };
+
+    // Add new category to the list
+    setCategories((prevCategories) => [...prevCategories, newCategory]);
+  };
+
+  const handleEditCategory = async (
+    id: number,
+    name: string,
+    description: string,
+    icon: React.ReactNode,
+    iconBgColor: string
+  ) => {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Editing category:", { id, name, description, iconBgColor });
+
+    // Update the category in the list
+    setCategories((prevCategories) =>
+      prevCategories.map((cat) =>
+        cat.id === id
+          ? {
+              ...cat,
+              name,
+              description,
+              icon,
+              iconBgColor,
+            }
+          : cat
+      )
+    );
+  };
+
+  const handleDeleteCategory = async (id: number) => {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Deleting category:", { id });
+
+    // Remove the category from the list
+    setCategories((prevCategories) =>
+      prevCategories.filter((cat) => cat.id !== id)
+    );
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingCategory(null);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingCategory(null);
   };
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <PageHeader />
+      <PageHeader onAddCategory={openModal} />
 
       {/* Summary Cards */}
       <SummaryCards cards={summaryCards} />
@@ -190,6 +314,29 @@ const Categories: React.FC = () => {
         categories={categories}
         onEdit={handleEdit}
         onDelete={handleDelete}
+      />
+
+      {/* Add Category Modal */}
+      <AddCategoryModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onAdd={handleAddCategory}
+      />
+
+      {/* Edit Category Modal */}
+      <EditCategoryModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onEdit={handleEditCategory}
+        category={editingCategory}
+      />
+
+      {/* Delete Category Modal */}
+      <DeleteCategoryModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteCategory}
+        category={deletingCategory}
       />
     </div>
   );

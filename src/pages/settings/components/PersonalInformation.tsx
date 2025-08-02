@@ -26,12 +26,12 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
   onBioChange,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-6">
         Personal Information
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* First Name */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -42,7 +42,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               type="text"
               value={firstName}
               onChange={(e) => onFirstNameChange(e.target.value)}
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326]"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] text-sm sm:text-base"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <svg
@@ -72,7 +72,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               type="text"
               value={lastName}
               onChange={(e) => onLastNameChange(e.target.value)}
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326]"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] text-sm sm:text-base"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <svg
@@ -102,7 +102,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               type="text"
               value={displayName}
               onChange={(e) => onDisplayNameChange(e.target.value)}
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326]"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] text-sm sm:text-base"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <svg
@@ -135,7 +135,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
               type="text"
               value={username}
               onChange={(e) => onUsernameChange(e.target.value)}
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326]"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] text-sm sm:text-base"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <svg
@@ -166,7 +166,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
             value={bio}
             onChange={(e) => onBioChange(e.target.value)}
             rows={4}
-            className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] resize-none"
+            className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] resize-none text-sm sm:text-base"
           />
           <div className="absolute bottom-3 right-3">
             <svg

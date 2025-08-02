@@ -29,7 +29,7 @@ const Settings: React.FC = () => {
 
   const handleImageRemove = () => {
     setProfileImage(
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=96&h=96&fit=crop&crop=face"
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
     );
   };
 
@@ -47,38 +47,40 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <PageHeader onSaveChanges={handleSaveChanges} />
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Page Header */}
+        <PageHeader onSaveChanges={handleSaveChanges} />
 
-      {/* Profile Picture Section */}
-      <ProfilePicture
-        currentImageUrl={profileImage}
-        onImageUpload={handleImageUpload}
-        onImageRemove={handleImageRemove}
-      />
+        {/* Profile Picture Section */}
+        <ProfilePicture
+          currentImageUrl={profileImage}
+          onImageUpload={handleImageUpload}
+          onImageRemove={handleImageRemove}
+        />
 
-      {/* Personal Information Section */}
-      <PersonalInformation
-        firstName={firstName}
-        lastName={lastName}
-        displayName={displayName}
-        username={username}
-        bio={bio}
-        onFirstNameChange={setFirstName}
-        onLastNameChange={setLastName}
-        onDisplayNameChange={setDisplayName}
-        onUsernameChange={setUsername}
-        onBioChange={setBio}
-      />
+        {/* Personal Information Section */}
+        <PersonalInformation
+          firstName={firstName}
+          lastName={lastName}
+          displayName={displayName}
+          username={username}
+          bio={bio}
+          onFirstNameChange={setFirstName}
+          onLastNameChange={setLastName}
+          onDisplayNameChange={setDisplayName}
+          onUsernameChange={setUsername}
+          onBioChange={setBio}
+        />
 
-      {/* Profile Preview Section */}
-      <ProfilePreview
-        imageUrl={profileImage}
-        displayName={displayName}
-        username={username}
-        bio={bio}
-      />
+        {/* Profile Preview Section */}
+        <ProfilePreview
+          imageUrl={profileImage}
+          displayName={displayName}
+          username={username}
+          bio={bio}
+        />
+      </div>
     </div>
   );
 };

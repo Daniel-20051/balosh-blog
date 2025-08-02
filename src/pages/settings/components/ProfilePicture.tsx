@@ -16,12 +16,12 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-4">Profile Picture</h2>
 
-      <div className="flex items-start space-x-6">
+      <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
         {/* Current Profile Picture */}
-        <div className="relative">
+        <div className="relative flex justify-center sm:justify-start">
           <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100">
             <img
               src={currentImageUrl}
@@ -29,7 +29,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#f88326] rounded-full flex items-center justify-center">
+          <div className="hidden absolute -bottom-1 -right-1 w-8 h-8 bg-[#f88326] rounded-full md:flex items-center justify-center">
             <svg
               className="w-4 h-4 text-white"
               fill="none"
@@ -54,11 +54,11 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
 
         {/* Upload Section */}
         <div className="flex-1">
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 mb-4 text-sm sm:text-base">
             Upload a new profile picture. Recommended size: 400x400px
           </p>
 
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
             <label className="cursor-pointer">
               <input
                 type="file"
@@ -66,7 +66,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                 onChange={handleFileInput}
                 className="hidden"
               />
-              <div className="bg-white border border-gray-300 text-black px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-gray-50 transition-colors">
+              <div className="bg-white border border-gray-300 text-black px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start space-x-2 hover:bg-gray-50 transition-colors w-full sm:w-auto">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -86,7 +86,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
 
             <button
               onClick={onImageRemove}
-              className="bg-white cursor-pointer border border-red-600 text-red-600 px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-red-50 transition-colors"
+              className="bg-white cursor-pointer border border-red-600 text-red-600 px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start space-x-2 hover:bg-red-50 transition-colors w-full sm:w-auto"
             >
               <svg
                 className="w-4 h-4"

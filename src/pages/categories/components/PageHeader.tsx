@@ -1,7 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
-const PageHeader: React.FC = () => {
+interface PageHeaderProps {
+  onAddCategory: () => void;
+}
+
+const PageHeader: React.FC<PageHeaderProps> = ({ onAddCategory }) => {
   return (
     <div className="flex justify-between items-start">
       <div>
@@ -10,8 +13,8 @@ const PageHeader: React.FC = () => {
           Manage your blog categories and organize your content
         </p>
       </div>
-      <Link
-        to="/new-category"
+      <button
+        onClick={onAddCategory}
         className="bg-black text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-gray-800 transition-colors"
       >
         <svg
@@ -28,7 +31,7 @@ const PageHeader: React.FC = () => {
           />
         </svg>
         <span>Add Category</span>
-      </Link>
+      </button>
     </div>
   );
 };

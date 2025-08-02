@@ -14,12 +14,12 @@ const ProfilePreview: React.FC<ProfilePreviewProps> = ({
   bio,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-6">Profile Preview</h2>
 
-      <div className="flex items-start space-x-4">
+      <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
         {/* Profile Picture */}
-        <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0">
+        <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0 mx-auto sm:mx-0">
           <img
             src={imageUrl}
             alt="Profile Preview"
@@ -28,7 +28,7 @@ const ProfilePreview: React.FC<ProfilePreviewProps> = ({
         </div>
 
         {/* Profile Information */}
-        <div className="flex flex-col">
+        <div className="flex flex-col text-center sm:text-left">
           {/* Display Name */}
           <h3 className="text-xl font-bold text-gray-900 mb-1">
             {displayName}
