@@ -1,0 +1,50 @@
+import React from "react";
+
+interface ProfilePreviewProps {
+  imageUrl: string;
+  displayName: string;
+  username: string;
+  bio: string;
+}
+
+const ProfilePreview: React.FC<ProfilePreviewProps> = ({
+  imageUrl,
+  displayName,
+  username,
+  bio,
+}) => {
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 className="text-lg font-bold text-gray-900 mb-6">Profile Preview</h2>
+
+      <div className="flex items-start space-x-4">
+        {/* Profile Picture */}
+        <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0">
+          <img
+            src={imageUrl}
+            alt="Profile Preview"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Profile Information */}
+        <div className="flex flex-col">
+          {/* Display Name */}
+          <h3 className="text-xl font-bold text-gray-900 mb-1">
+            {displayName}
+          </h3>
+
+          {/* Username */}
+          <p className="text-gray-600 mb-3">{username}</p>
+
+          {/* Bio */}
+          <p className="text-gray-600 text-sm leading-relaxed max-w-md">
+            {bio || "No bio provided"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePreview;
