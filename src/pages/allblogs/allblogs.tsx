@@ -2,14 +2,31 @@ import React, { useState, useMemo } from "react";
 import PageHeader from "./components/PageHeader";
 import SummaryCards from "./components/SummaryCards";
 import BlogTable from "./components/BlogTable";
+import DeleteBlogModal from "./components/DeleteBlogModal";
 
 const AllBlogs: React.FC = () => {
   // Filter state
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
-  // Mock data
-  const blogs = [
+  // Delete modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingBlog, setDeletingBlog] = useState<{
+    id: number;
+    title: string;
+    thumbnail: string;
+    category: string;
+    author: {
+      name: string;
+      avatar: string | null;
+    };
+    status: string;
+    views: number;
+    date: string;
+  } | null>(null);
+
+  // Mock data - converted to state
+  const [blogs, setBlogs] = useState([
     {
       id: 1,
       title: "The Future of Web Development: Trends to Watch in 2024",
@@ -96,7 +113,7 @@ const AllBlogs: React.FC = () => {
       views: 0,
       date: "Draft saved 3 days ago",
     },
-  ];
+  ]);
 
   // Filter blogs based on selected filters
   const filteredBlogs = useMemo(() => {
@@ -167,8 +184,26 @@ const AllBlogs: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    console.log("Delete blog:", id);
-    // Show confirmation dialog and delete blog
+    const blog = blogs.find((blog) => blog.id === id);
+    if (blog) {
+      setDeletingBlog(blog);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDeleteBlog = async (id: number) => {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log("Deleting blog:", { id });
+
+    // Remove the blog from the list
+    setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingBlog(null);
   };
 
   return (
@@ -189,6 +224,14 @@ const AllBlogs: React.FC = () => {
         blogs={filteredBlogs}
         onEdit={handleEdit}
         onDelete={handleDelete}
+      />
+
+      {/* Delete Blog Modal */}
+      <DeleteBlogModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteBlog}
+        blog={deletingBlog}
       />
     </div>
   );
