@@ -12,6 +12,9 @@ import NewBlog from "./pages/newblog/newblog";
 import AllBlogs from "./pages/allblogs/allblogs";
 import Categories from "./pages/categories/categories";
 import Settings from "./pages/settings/settings";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AccessDenied from "./pages/access-denied/AccessDenied";
+import NotFoundPage from "./pages/404 page/404-page";
 
 const App = () => {
   return (
@@ -20,9 +23,17 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LoginPage />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
 
           {/* Protected Routes with Layout */}
-          <Route path="/admin" element={<Layout />}>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Navigate to="/admin/dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="new-blog" element={<NewBlog />} />
@@ -32,7 +43,7 @@ const App = () => {
           </Route>
 
           {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/admin/dashboard" />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </AuthProvider>

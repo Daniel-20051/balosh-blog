@@ -114,14 +114,14 @@ const Dashboard: React.FC = () => {
         </h1>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <ButtonLink
-            to="/new-blog"
+            to="/admin/new-blog"
             variant="primary"
             icon={newBlogIcon}
             mobileText="New Blog"
             desktopText="New Blog"
           />
           <ButtonLink
-            to="/all-blogs"
+            to="/admin/all-blogs"
             variant="secondary"
             icon={allBlogsIcon}
             mobileText="All Blogs"

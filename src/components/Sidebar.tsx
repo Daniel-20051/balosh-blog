@@ -153,7 +153,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0 ${
         isSidebarOpen ? "w-64" : "w-16"
-      } fixed lg:sticky top-16 h-[calc(100vh-4rem)] bg-gray-100 transition-all duration-300 ease-in-out overflow-y-auto z-50 lg:z-auto`}
+      } fixed lg:sticky top-16 h-[calc(100vh-4rem)] bg-gray-100 transition-all duration-300 ease-in-out overflow-y-auto z-30 lg:z-auto`}
     >
       <nav className="mt-8">
         <div className="px-4 space-y-2">

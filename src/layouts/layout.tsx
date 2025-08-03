@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
+import { useAuth } from "../contexts/AuthContext";
 
 const Layout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // Set initial sidebar state based on screen size
   useEffect(() => {
@@ -28,9 +30,9 @@ const Layout: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
+    // Use the AuthContext logout function
+    logout();
+    // Redirect to root page
     navigate("/");
   };
 
@@ -46,7 +48,9 @@ const Layout: React.FC = () => {
       {/* Header */}
       <Navbar
         isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        onToggleSidebar={() => {
+          setIsSidebarOpen(!isSidebarOpen);
+        }}
       />
 
       <div className="flex h-[calc(100vh-4rem)]">

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 interface NavbarProps {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
@@ -14,8 +13,10 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         <div className="flex items-center space-x-4">
           {/* Mobile Menu Button */}
           <button
-            onClick={onToggleSidebar}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 lg:hidden"
+            onClick={() => {
+              onToggleSidebar();
+            }}
+            className="p-2 rounded-md z-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100 lg:hidden"
           >
             <svg
               className="w-6 h-6"
@@ -52,7 +53,11 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             </svg>
           </button>
 
-          <h1 className="text-xl font-bold text-[#000000]">Balosh Blog</h1>
+          <img
+            src="/assets/logo.png"
+            alt="logo"
+            className=" w-25 lg:w-37 h-12 lg:h-18"
+          />
         </div>
 
         <div className="flex items-center space-x-4">

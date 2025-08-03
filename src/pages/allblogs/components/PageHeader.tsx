@@ -53,7 +53,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
         {/* New Blog Button */}
         <Link
-          to="/new-blog"
+          to="/admin/new-blog"
           className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 flex items-center justify-center space-x-2 transition-colors"
         >
           <svg

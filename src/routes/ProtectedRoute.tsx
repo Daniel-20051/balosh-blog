@@ -19,7 +19,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     // Redirect to login page with the return url
-    return <Navigate to="/" />;
+    return <Navigate to="/access-denied" />;
   }
 
   return <>{children}</>;
