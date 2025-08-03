@@ -1,142 +1,69 @@
-# Balosh Blog
+# React + TypeScript + Vite
 
-A modern blog management application built with React, TypeScript, and Vite.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- 🔐 Authentication system
-- 📝 Blog post creation and management
-- 📂 Category management
-- 📊 Dashboard with analytics
-- 🎨 Modern, responsive UI with Tailwind CSS
-- ⚡ Fast development with Vite
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Getting Started
+## Expanding the ESLint configuration
 
-### Prerequisites
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-- Node.js (version 16 or higher)
-- npm or yarn
+```js
+export default tseslint.config([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      // Other configs...
 
-### Installation
+      // Remove tseslint.configs.recommended and replace with this
+      ...tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      ...tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      ...tseslint.configs.stylisticTypeChecked,
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-### Development
-
-Start the development server:
-
-```bash
-npm run dev
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
 ```
 
-The application will be available at `http://localhost:5173`
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-### Building for Production
+```js
+// eslint.config.js
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
 
-Build the application:
-
-```bash
-npm run build
+export default tseslint.config([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs["recommended-typescript"],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
 ```
-
-Preview the production build:
-
-```bash
-npm run preview
-```
-
-## Deployment
-
-This application is configured to handle Single Page Application (SPA) routing properly. Choose the deployment method that best fits your hosting platform:
-
-### Netlify
-
-1. Build your application: `npm run build`
-2. Deploy the `dist` folder to Netlify
-3. The `public/_redirects` file will automatically handle SPA routing
-
-### Vercel
-
-1. Connect your repository to Vercel
-2. The `vercel.json` file will automatically handle SPA routing
-3. Deploy with: `vercel --prod`
-
-### Other Platforms (Express.js Server)
-
-For platforms that support Node.js:
-
-1. Install dependencies: `npm install`
-2. Build the application: `npm run build`
-3. Start the production server: `npm start`
-
-The Express.js server (`server.js`) will handle SPA routing by serving `index.html` for all routes.
-
-### Manual Server Configuration
-
-If you're using a different web server, configure it to:
-
-1. Serve static files from the `dist` directory
-2. Redirect all routes to `index.html` (except for API routes)
-
-**Apache (.htaccess):**
-
-```apache
-RewriteEngine On
-RewriteBase /
-RewriteRule ^index\.html$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.html [L]
-```
-
-**Nginx:**
-
-```nginx
-location / {
-    try_files $uri $uri/ /index.html;
-}
-```
-
-## SPA Routing Configuration
-
-This application uses React Router DOM for client-side routing. The following configurations ensure that direct navigation to routes like `/login`, `/dashboard`, etc. works correctly:
-
-- **Development**: Vite is configured with `historyApiFallback: true`
-- **Netlify**: Uses `public/_redirects` file
-- **Vercel**: Uses `vercel.json` configuration
-- **Express.js**: Custom server handles all routes
-
-## Project Structure
-
-```
-src/
-├── components/          # Reusable UI components
-├── contexts/           # React contexts (Auth)
-├── layouts/            # Layout components
-├── pages/              # Page components
-│   ├── login/         # Authentication pages
-│   ├── dashboard/     # Dashboard pages
-│   ├── newblog/       # Blog creation
-│   ├── allblogs/      # Blog management
-│   ├── categories/    # Category management
-│   └── settings/      # User settings
-└── routes/            # Route protection components
-```
-
-## Technologies Used
-
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **React Router DOM** - Client-side routing
-- **Tailwind CSS** - Utility-first CSS framework
-- **Express.js** - Production server (optional)
-
-## License
-
-This project is private and proprietary.
