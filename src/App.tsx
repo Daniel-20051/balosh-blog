@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import Layout from "./layouts/layout";
 import LoginPage from "./pages/login/login";
 import AccessDenied from "./pages/access-denied/AccessDenied";
@@ -28,11 +28,9 @@ const App = () => {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              </ProtectedRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
             }
           />
           <Route
