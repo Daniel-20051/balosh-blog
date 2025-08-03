@@ -31,7 +31,7 @@ const Layout: React.FC = () => {
     // Clear authentication data
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
-    navigate("/login");
+    navigate("/");
   };
 
   const handleSidebarClose = () => {
