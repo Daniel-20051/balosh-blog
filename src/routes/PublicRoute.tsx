@@ -19,7 +19,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
 
   if (isAuthenticated) {
     // Redirect to dashboard if already logged in
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/admin/dashboard" />;
   }
 
   return <>{children}</>;

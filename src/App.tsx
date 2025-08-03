@@ -23,7 +23,7 @@ const App = () => {
 
           {/* Protected Routes with Layout */}
           <Route path="/admin" element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route index element={<Navigate to="/dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="new-blog" element={<NewBlog />} />
             <Route path="all-blogs" element={<AllBlogs />} />
@@ -32,7 +32,7 @@ const App = () => {
           </Route>
 
           {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" />} />
         </Routes>
       </Router>
     </AuthProvider>

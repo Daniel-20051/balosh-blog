@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigationItems = [
     {
       name: "Dashboard",
-      href: "/dashboard",
+      href: "/admin/dashboard",
       icon: (
         <svg
           className="w-5 h-5"
@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       name: "New Blog",
-      href: "/new-blog",
+      href: "/admin/new-blog",
       icon: (
         <svg
           className="w-5 h-5"
@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       name: "All Blogs",
-      href: "/all-blogs",
+      href: "/admin/all-blogs",
       icon: (
         <svg
           className="w-5 h-5"
@@ -102,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       name: "Categories",
-      href: "/categories",
+      href: "/admin/categories",
       icon: (
         <svg
           className="w-5 h-5"
@@ -121,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       name: "Settings",
-      href: "/settings",
+      href: "/admin/settings",
       icon: (
         <svg
           className="w-5 h-5"
