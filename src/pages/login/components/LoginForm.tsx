@@ -90,8 +90,8 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-[#000000] mb-2">Balosh Blog</h1>
+      <div className="text-center flex flex-col items-center mb-8">
+        <img src="/assets/logo.png" alt="logo" className="w-60 h-30" />
         <p className="text-[#515051]">
           Welcome back! Please sign in to your account
         </p>
