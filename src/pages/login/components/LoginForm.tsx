@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Input from "../../../components/Input";
 import Button from "../../../components/Button";
 import Checkbox from "../../../components/Checkbox";
@@ -7,7 +7,6 @@ import { useAuth } from "../../../contexts/AuthContext";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { login, loading } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -50,8 +49,7 @@ const LoginForm: React.FC = () => {
       const success = await login(formData.email, formData.password);
       if (success) {
         // Redirect to the page they were trying to access, or dashboard
-        const from = (location.state as any)?.from?.pathname || "/dashboard";
-        navigate(from, { replace: true });
+        navigate("/admin/dashboard");
       } else {
         setErrors({ general: "Invalid email or password" });
       }
