@@ -5,10 +5,9 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./routes/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./layouts/layout";
 import LoginPage from "./pages/login/login";
-import AccessDenied from "./pages/access-denied/AccessDenied";
 import Dashboard from "./pages/dashboard/dashboard";
 import NewBlog from "./pages/newblog/newblog";
 import AllBlogs from "./pages/allblogs/allblogs";
@@ -21,61 +20,26 @@ const App = () => {
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/access-denied" element={<AccessDenied />} />
+          <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected Routes */}
+          {/* Protected Routes with Layout */}
           <Route
-            path="/dashboard"
-            element={
-              <Layout>
-                <Dashboard />
-              </Layout>
-            }
-          />
-          <Route
-            path="/new-blog"
+            path="/"
             element={
               <ProtectedRoute>
-                <Layout>
-                  <NewBlog />
-                </Layout>
+                <Layout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="/all-blogs"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <AllBlogs />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/categories"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Categories />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Settings />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="new-blog" element={<NewBlog />} />
+            <Route path="all-blogs" element={<AllBlogs />} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
 
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Catch all route */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>

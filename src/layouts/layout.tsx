@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Set initial sidebar state based on screen size
   useEffect(() => {
@@ -33,7 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // Clear authentication data
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
-    window.location.href = "/";
+    navigate("/login");
   };
 
   const handleSidebarClose = () => {
@@ -61,7 +59,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Main Content */}
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto bg-white">
-          <div className="max-w-7xl mx-auto">{children}</div>
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
