@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../../components/Input";
+import TextArea from "../../../components/TextArea";
 import Button from "../../../components/Button";
-import Checkbox from "../../../components/Checkbox";
 import { useAuth } from "../../../contexts/AuthContext";
-import { login } from "../api";
+import { signUp } from "../api";
 import Toast from "../../../components/Toast";
 
-const LoginForm: React.FC = () => {
+const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
   const { loading, setLoading, setUser } = useAuth();
   const [isToastVisible, setIsToastVisible] = useState(false);
@@ -15,13 +15,16 @@ const LoginForm: React.FC = () => {
   const [toastType, setToastType] = useState<"success" | "error">("success");
 
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
     email: "",
     password: "",
-    rememberMe: false,
+    bio: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
@@ -31,6 +34,20 @@ const LoginForm: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    }
 
     if (!formData.email) {
       newErrors.email = "Email is required";
@@ -53,7 +70,14 @@ const LoginForm: React.FC = () => {
     if (validateForm()) {
       try {
         setLoading(true);
-        const response = await login(formData.email, formData.password);
+        const response = await signUp(
+          formData.email,
+          formData.password,
+          formData.firstName,
+          formData.lastName,
+          formData.username,
+          formData.bio
+        );
         console.log(response);
         if (response.success) {
           setLoading(false);
@@ -70,19 +94,37 @@ const LoginForm: React.FC = () => {
           localStorage.setItem("user", JSON.stringify(userData));
           setUser(userData);
           navigate("/admin/dashboard");
-          setToastMessage("Login successful");
+          setToastMessage("Account created successfully");
           setToastType("success");
           setIsToastVisible(true);
         }
       } catch (error: any) {
         console.log(error);
         setLoading(false);
-        setToastMessage(error?.response?.data?.message || "Login failed");
+        setToastMessage(
+          String(error?.response?.data?.message) || "Failed to create account"
+        );
         setToastType("error");
         setIsToastVisible(true);
       }
     }
   };
+
+  const userIcon = (
+    <svg
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
+    </svg>
+  );
 
   const emailIcon = (
     <svg
@@ -125,13 +167,45 @@ const LoginForm: React.FC = () => {
         onClose={() => setIsToastVisible(false)}
       />
       <div className="text-center flex flex-col items-center mb-8">
-        <img src="/assets/logo.png" alt="logo" className="w-60 h-30" />
-        <p className="text-[#515051]">
-          Welcome back! Please sign in to your account
-        </p>
+        <img src="/assets/logo.png" alt="logo" className="w-50 h-25" />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <Input
+            label="First Name"
+            type="text"
+            placeholder="Enter your first name"
+            value={formData.firstName}
+            onChange={(value) => handleInputChange("firstName", value)}
+            icon={userIcon}
+            error={errors.firstName}
+            required
+          />
+
+          <Input
+            label="Last Name"
+            type="text"
+            placeholder="Enter your last name"
+            value={formData.lastName}
+            onChange={(value) => handleInputChange("lastName", value)}
+            icon={userIcon}
+            error={errors.lastName}
+            required
+          />
+        </div>
+
+        <Input
+          label="Username"
+          type="text"
+          placeholder="Choose a unique username"
+          value={formData.username}
+          onChange={(value) => handleInputChange("username", value)}
+          icon={userIcon}
+          error={errors.username}
+          required
+        />
+
         <Input
           label="Email Address"
           type="email"
@@ -142,7 +216,6 @@ const LoginForm: React.FC = () => {
           error={errors.email}
           required
         />
-
         <Input
           label="Password"
           type="password"
@@ -154,19 +227,14 @@ const LoginForm: React.FC = () => {
           required
         />
 
-        <div className="flex items-center justify-between">
-          <Checkbox
-            label="Remember me"
-            checked={formData.rememberMe}
-            onChange={(checked) => handleInputChange("rememberMe", checked)}
-          />
-          <a
-            href="#"
-            className="text-sm text-[#f88326] hover:text-[#f88326]/80 transition-colors duration-200"
-          >
-            Forgot password?
-          </a>
-        </div>
+        <TextArea
+          label="Bio (Optional)"
+          placeholder="Tell us a bit about yourself and your blogging interests..."
+          value={formData.bio}
+          onChange={(value) => handleInputChange("bio", value)}
+          rows={2}
+          maxLength={500}
+        />
 
         <Button
           type="submit"
@@ -178,10 +246,10 @@ const LoginForm: React.FC = () => {
           {loading ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              Signing In...
+              Creating Account...
             </div>
           ) : (
-            "Sign In"
+            "Create Account"
           )}
         </Button>
 
@@ -192,12 +260,12 @@ const LoginForm: React.FC = () => {
 
       <div className="text-center mt-6">
         <p className="text-[#515051]">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <a
-            href="/signup"
+            href="/"
             className="text-[#f88326] hover:text-[#f88326]/80 font-medium transition-colors duration-200"
           >
-            Sign up
+            Sign in
           </a>
         </p>
       </div>
@@ -205,4 +273,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default SignUpForm;

@@ -1,19 +1,22 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+export const BASE_URL = "https://balosh-blog-api.onrender.com/api/v1";
 
 interface User {
   id: string;
   email: string;
+  username: string;
   name: string;
-  password: string;
+  bio?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -52,34 +55,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    setLoading(true);
-
-    try {
-      // For demo purposes, accept any email/password combination
-      // In a real app, you would make an API call here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const userData: User = {
-        id: "1",
-        email,
-        password,
-        name: email.split("@")[0], // Use email prefix as name
-      };
-
-      setUser(userData);
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      setLoading(false);
-      return true;
-    } catch (error) {
-      setLoading(false);
-      return false;
-    }
-  };
-
   const logout = () => {
     setUser(null);
     localStorage.removeItem("isAuthenticated");
@@ -89,9 +64,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
-    login,
     logout,
     loading,
+    setUser,
+    setLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginForm from "./components/LoginForm";
-import LoginHero from "./components/LoginHero";
+import SignUpForm from "./components/SignUpForm";
+import SignUpHero from "./components/SignUpHero";
 import { useAuth } from "../../contexts/AuthContext";
 
-const LoginPage: React.FC = () => {
+const SignUpPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useAuth();
 
@@ -15,24 +15,24 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, loading, navigate]);
 
-  // If authenticated, don't render the login form (will redirect)
+  // If authenticated, don't render the signup form (will redirect)
   if (isAuthenticated) {
     return null;
   }
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Column - Login Form */}
+      {/* Left Column - Sign Up Form */}
       <div className="flex-1 flex items-center justify-center bg-[#f9fafb] px-4 sm:px-6 lg:px-8">
-        <LoginForm />
+        <SignUpForm />
       </div>
 
       {/* Right Column - Hero Section */}
       <div className="hidden lg:block lg:w-1/2">
-        <LoginHero />
+        <SignUpHero />
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default SignUpPage;

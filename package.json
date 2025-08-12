@@ -11,11 +11,10 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
-    "font-awesome": "^4.7.0",
+    "axios": "^1.11.0",
     "froala-editor": "^4.6.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-froala-wysiwyg": "^4.6.0",
     "react-router-dom": "^7.7.1",
     "tailwindcss": "^4.1.11"
   },

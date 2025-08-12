@@ -15,6 +15,7 @@ import Settings from "./pages/settings/settings";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AccessDenied from "./pages/access-denied/AccessDenied";
 import NotFoundPage from "./pages/404 page/404-page";
+import SignUpPage from "./pages/signUp/signUp";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           {/* Public Routes */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/access-denied" element={<AccessDenied />} />
+          <Route path="/signup" element={<SignUpPage />} />
 
           {/* Protected Routes with Layout */}
           <Route
