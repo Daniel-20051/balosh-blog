@@ -4,12 +4,14 @@ import Input from "../../../components/Input";
 import Button from "../../../components/Button";
 import Checkbox from "../../../components/Checkbox";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useUser } from "../../../contexts/UserContext";
 import { login } from "../api";
 import Toast from "../../../components/Toast";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { loading, setLoading, setUser } = useAuth();
+  const { loading, setLoading } = useAuth();
+  const { fetchUser } = useUser();
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
@@ -54,21 +56,11 @@ const LoginForm: React.FC = () => {
       try {
         setLoading(true);
         const response = await login(formData.email, formData.password);
-        console.log(response);
+
         if (response.success) {
           setLoading(false);
-
-          const userData = {
-            id: response.data.user.id,
-            email: response.data.user.email,
-            username: response.data.user.username,
-            name: `${response.data.user.firstName} ${response.data.user.lastName}`,
-            bio: response.data.user.bio,
-          };
-
           localStorage.setItem("isAuthenticated", "true");
-          localStorage.setItem("user", JSON.stringify(userData));
-          setUser(userData);
+          await fetchUser();
           navigate("/admin/dashboard");
           setToastMessage("Login successful");
           setToastType("success");

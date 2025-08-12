@@ -5,6 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { UserProvider } from "./contexts/UserContext";
 import Layout from "./layouts/layout";
 import LoginPage from "./pages/login/login";
 import Dashboard from "./pages/dashboard/dashboard";
@@ -20,34 +21,36 @@ import SignUpPage from "./pages/signUp/signUp";
 const App = () => {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/access-denied" element={<AccessDenied />} />
-          <Route path="/signup" element={<SignUpPage />} />
+      <UserProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/access-denied" element={<AccessDenied />} />
+            <Route path="/signup" element={<SignUpPage />} />
 
-          {/* Protected Routes with Layout */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="/admin/dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="new-blog" element={<NewBlog />} />
-            <Route path="all-blogs" element={<AllBlogs />} />
-            <Route path="categories" element={<Categories />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+            {/* Protected Routes with Layout */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="/admin/dashboard" />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="new-blog" element={<NewBlog />} />
+              <Route path="all-blogs" element={<AllBlogs />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-          {/* Catch all route */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Router>
+            {/* Catch all route */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Router>
+      </UserProvider>
     </AuthProvider>
   );
 };

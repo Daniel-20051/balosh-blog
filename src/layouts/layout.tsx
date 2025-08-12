@@ -51,6 +51,7 @@ const Layout: React.FC = () => {
         onToggleSidebar={() => {
           setIsSidebarOpen(!isSidebarOpen);
         }}
+        onLogout={handleLogout}
       />
 
       <div className="flex h-[calc(100vh-4rem)]">

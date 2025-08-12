@@ -1,21 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+import { getAuthToken, removeAuthToken } from "../utils/cookies";
 export const BASE_URL = "https://balosh-blog-api.onrender.com/api/v1";
 
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  name: string;
-  bio?: string;
-}
-
 interface AuthContextType {
-  user: User | null;
   isAuthenticated: boolean;
   logout: () => void;
   loading: boolean;
-  setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
 }
 
@@ -34,21 +25,18 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is already logged in
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
-    const userData = localStorage.getItem("user");
+    const token = getAuthToken();
 
-    if (isAuthenticated === "true" && userData) {
+    if (token) {
       try {
-        setUser(JSON.parse(userData));
+        setLoading(false);
       } catch (error) {
         console.error("Error parsing user data:", error);
-        localStorage.removeItem("isAuthenticated");
-        localStorage.removeItem("user");
+        removeAuthToken();
       }
     }
 
@@ -56,17 +44,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
+    removeAuthToken(); // Remove the auth token cookie
   };
 
   const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
+    isAuthenticated: !!getAuthToken(),
     logout,
     loading,
-    setUser,
     setLoading,
   };
 

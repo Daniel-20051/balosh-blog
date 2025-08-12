@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SignUpForm from "./components/SignUpForm";
 import SignUpHero from "./components/SignUpHero";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUser } from "../../contexts/UserContext";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading } = useUser();
 
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard

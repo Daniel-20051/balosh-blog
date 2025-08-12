@@ -1,14 +1,15 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useUser } from "../contexts/UserContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { loading, isAuthenticated, user } = useUser();
 
+  // Show loading spinner while user data is loading
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -17,7 +18,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated) {
+  // Check if user is authenticated and has user data
+  if (!isAuthenticated || !user) {
     // Redirect to login page
     return <Navigate to="/" />;
   }
