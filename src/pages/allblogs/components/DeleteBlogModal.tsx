@@ -229,7 +229,6 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
 
                       {/* Views and Date */}
                       <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{blog.views} views</span>
                         <span>{blog.date}</span>
                       </div>
                     </div>

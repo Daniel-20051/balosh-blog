@@ -24,6 +24,7 @@ const AllBlogs: React.FC = () => {
 
   //Loader state
   const [isStatsLoading, setIsStatsLoading] = useState(false);
+  const [isBlogsLoading, setIsBlogsLoading] = useState(false);
 
   // Delete modal state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -54,10 +55,51 @@ const AllBlogs: React.FC = () => {
   };
   const handleBlogs = async () => {
     try {
-      const blogs = await getBlogs();
-      console.log(blogs);
+      setIsBlogsLoading(true);
+      const response = await getBlogs();
+      // Normalize potential shapes: { blogs: [...] }, { data: { blogs: [...] } }, or [...]
+      const payload: any = Array.isArray(response)
+        ? { blogs: response }
+        : Array.isArray(response?.blogs)
+        ? response
+        : Array.isArray(response?.data?.blogs)
+        ? response.data
+        : { blogs: [] };
+
+      const formatDateLabel = (blog: any): string => {
+        const iso = blog?.publishDate || blog?.createdAt;
+        if (!iso) return "";
+        const date = new Date(iso);
+        return `Published on ${date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`;
+      };
+
+      const mappedBlogs = (payload.blogs as any[]).map(
+        (b: any, idx: number) => ({
+          id: idx + 1, // fallback numeric id for UI purposes
+          title: b?.title ?? "Untitled",
+          thumbnail:
+            b?.featuredImage ||
+            "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=40&h=40&fit=crop",
+          category: b?.category?.name || b?.category || "uncategorized",
+          author: {
+            name: b?.author?.firstName || b?.author?.username || "Unknown",
+            avatar: b?.author?.avatar || null,
+          },
+          status: (b?.status || "draft").toLowerCase(),
+          views: Number(b?.views ?? 0),
+          date: formatDateLabel(b),
+        })
+      );
+
+      setBlogs(mappedBlogs);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsBlogsLoading(false);
     }
   };
 
@@ -81,78 +123,6 @@ const AllBlogs: React.FC = () => {
       status: "published",
       views: 1200,
       date: "Published on March 15, 2024",
-    },
-    {
-      id: 2,
-      title: "Design Systems: Building Consistent User Experiences",
-      thumbnail:
-        "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=40&h=40&fit=crop",
-      category: "design",
-      author: {
-        name: "John Doe",
-        avatar: null,
-      },
-      status: "published",
-      views: 890,
-      date: "Published on March 12, 2024",
-    },
-    {
-      id: 3,
-      title: "Startup Growth Strategies: From Idea to Market",
-      thumbnail:
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=40&h=40&fit=crop",
-      category: "business",
-      author: {
-        name: "Emma Wilson",
-        avatar:
-          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face",
-      },
-      status: "draft",
-      views: 0,
-      date: "Draft saved 1 day ago",
-    },
-    {
-      id: 4,
-      title: "React Performance Optimization Techniques",
-      thumbnail:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=40&h=40&fit=crop",
-      category: "technology",
-      author: {
-        name: "Mike Johnson",
-        avatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
-      },
-      status: "pending",
-      views: 0,
-      date: "Under review 5 days ago",
-    },
-    {
-      id: 5,
-      title: "Sustainable Living: Small Changes, Big Impact",
-      thumbnail:
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=40&h=40&fit=crop",
-      category: "lifestyle",
-      author: {
-        name: "Alex Chen",
-        avatar: null,
-      },
-      status: "published",
-      views: 567,
-      date: "Published on March 8, 2024",
-    },
-    {
-      id: 6,
-      title: "CSS Grid vs Flexbox: A Complete Guide",
-      thumbnail:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop",
-      category: "tutorial",
-      author: {
-        name: "Maria Garcia",
-        avatar: null,
-      },
-      status: "draft",
-      views: 0,
-      date: "Draft saved 3 days ago",
     },
   ]);
 
@@ -297,6 +267,7 @@ const AllBlogs: React.FC = () => {
         blogs={pagedBlogs}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isBlogsLoading}
       />
 
       {/* Pagination */}

@@ -18,9 +18,15 @@ interface BlogTableProps {
   blogs: Blog[];
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
+  isLoading?: boolean;
 }
 
-const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
+const BlogTable: React.FC<BlogTableProps> = ({
+  blogs,
+  onEdit,
+  onDelete,
+  isLoading = false,
+}) => {
   const getCategoryColor = (category: string) => {
     const colors = {
       technology: "bg-blue-100 text-blue-800",
@@ -43,11 +49,44 @@ const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
     return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
+  const renderSkeletonRows = (count: number) => (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <tr key={`skeleton-${i}`}>
+          <td className="px-6 py-4">
+            <div className="flex items-center space-x-4">
+              <div className="h-10 w-10 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="space-y-2">
+                <div className="h-3 w-48 bg-gray-200 rounded animate-pulse" />
+                <div className="h-3 w-32 bg-gray-100 rounded animate-pulse" />
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-6 w-24 bg-gray-200 rounded-full animate-pulse" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse" />
+              <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto max-h-[60vh] overflow-y-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="sticky top-0 z-10 bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Title
@@ -67,7 +106,9 @@ const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {blogs.length > 0 ? (
+            {isLoading ? (
+              renderSkeletonRows(5)
+            ) : blogs.length > 0 ? (
               blogs.map((blog) => (
                 <tr key={blog.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -107,7 +148,7 @@ const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
                           />
                         ) : (
                           <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-medium text-gray-600">
+                            <span className="text-xs uppercase font-medium text-gray-600">
                               {blog.author.name.charAt(0)}
                             </span>
                           </div>
