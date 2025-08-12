@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import BlogTitleInput from "./components/BlogTitleInput";
 import FeaturedImageUpload from "./components/FeaturedImageUpload";
 import ContentEditor from "./components/ContentEditor";
 import ExcerptInput from "./components/ExcerptInput";
 import PublishSettings from "./components/PublishSettings";
 import SeoSettings from "./components/SeoSettings";
-import QuickStats from "./components/QuickStats";
 
 const NewBlog: React.FC = () => {
   // Form state
@@ -23,32 +22,6 @@ const NewBlog: React.FC = () => {
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
 
-  // Stats
-  const [wordCount, setWordCount] = useState(0);
-  const [readingTime, setReadingTime] = useState(0);
-  const [lastSaved, setLastSaved] = useState("Never");
-
-  // Calculate word count and reading time
-  useEffect(() => {
-    const words = content
-      .trim()
-      .split(/\s+/)
-      .filter((word) => word.length > 0);
-    setWordCount(words.length);
-    setReadingTime(Math.ceil(words.length / 200)); // Average reading speed
-  }, [content]);
-
-  // Auto-save functionality
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (title || content) {
-        setLastSaved(new Date().toLocaleTimeString());
-      }
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [title, content]);
-
   const handleImageUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -59,16 +32,40 @@ const NewBlog: React.FC = () => {
 
   const handleSaveDraft = () => {
     // Save draft logic here
-    console.log("Saving draft...");
+    const blogData = {
+      title,
+      content, // This contains the HTML from Froala editor
+      excerpt,
+      featuredImage,
+      status: "draft",
+      category,
+      tags,
+      metaTitle,
+      metaDescription,
+    };
+    console.log("Saving draft...", blogData);
+    // Send blogData to your server
   };
 
   const handlePublish = () => {
     // Publish logic here
-    console.log("Publishing...");
+    const blogData = {
+      title,
+      content, // This contains the HTML from Froala editor
+      excerpt,
+      featuredImage,
+      status: "published",
+      category,
+      tags,
+      metaTitle,
+      metaDescription,
+    };
+    console.log("Publishing...", blogData);
+    // Send blogData to your server
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       {/* Page Header with Action Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -161,13 +158,6 @@ const NewBlog: React.FC = () => {
             metaDescription={metaDescription}
             onMetaTitleChange={setMetaTitle}
             onMetaDescriptionChange={setMetaDescription}
-          />
-
-          {/* Quick Stats */}
-          <QuickStats
-            wordCount={wordCount}
-            readingTime={readingTime}
-            lastSaved={lastSaved}
           />
         </div>
       </div>
