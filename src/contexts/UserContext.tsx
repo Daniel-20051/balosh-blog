@@ -7,7 +7,8 @@ interface User {
   id: string;
   username: string;
   bio: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: string;
   profilePhoto: string;
@@ -47,7 +48,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         id: response.data.user._id,
         username: response.data.user.username,
         bio: response.data.user.bio || "",
-        name: response.data.user.firstName,
+        firstName: response.data.user.firstName,
+        lastName: response.data.user.lastName,
         email: response.data.user.email,
         role: "admin",
         profilePhoto: response.data.user.profilePhoto,

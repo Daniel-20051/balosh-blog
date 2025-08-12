@@ -23,11 +23,29 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
         {/* Current Profile Picture */}
         <div className="relative flex justify-center sm:justify-start">
           <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100">
-            <img
-              src={currentImageUrl}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+            {currentImageUrl ? (
+              <img
+                src={currentImageUrl}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                <svg
+                  className="w-12 h-12 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+            )}
           </div>
           <div className="hidden absolute -bottom-1 -right-1 w-8 h-8 bg-[#f88326] rounded-full md:flex items-center justify-center">
             <svg

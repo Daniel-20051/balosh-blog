@@ -6,11 +6,13 @@ interface PersonalInformationProps {
   displayName: string;
   username: string;
   bio: string;
+  email: string;
   onFirstNameChange: (value: string) => void;
   onLastNameChange: (value: string) => void;
   onDisplayNameChange: (value: string) => void;
   onUsernameChange: (value: string) => void;
   onBioChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
 }
 
 const PersonalInformation: React.FC<PersonalInformationProps> = ({
@@ -19,11 +21,13 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
   displayName,
   username,
   bio,
+  email,
   onFirstNameChange,
   onLastNameChange,
   onDisplayNameChange,
   onUsernameChange,
   onBioChange,
+  onEmailChange,
 }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
@@ -31,11 +35,15 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
         Personal Information
       </h2>
 
+      <p className="text-sm text-gray-600 mb-6">
+        Fields marked with <span className="text-red-500">*</span> are required.
+      </p>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* First Name */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            First Name
+            First Name <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -65,7 +73,7 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
         {/* Last Name */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Last Name
+            Last Name <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -149,6 +157,36 @@ const PersonalInformation: React.FC<PersonalInformationProps> = ({
                   strokeLinejoin="round"
                   strokeWidth={2}
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Email */}
+        <div className="relative">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Email <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => onEmailChange(e.target.value)}
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] text-sm sm:text-base"
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <svg
+                className="w-4 h-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
                 />
               </svg>
             </div>
