@@ -1,13 +1,29 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import PageHeader from "./components/PageHeader";
 import SummaryCards from "./components/SummaryCards";
 import BlogTable from "./components/BlogTable";
 import DeleteBlogModal from "./components/DeleteBlogModal";
+import { getBlogs, getBlogStats } from "./api";
+import Pagination from "../../components/Pagination";
 
 const AllBlogs: React.FC = () => {
   // Filter state
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+
+  //Blog stats state
+  const [blogStats, setBlogStats] = useState<{
+    totalBlogs: number;
+    publishedBlogs: number;
+    draftBlogs: number;
+  }>({
+    totalBlogs: 0,
+    publishedBlogs: 0,
+    draftBlogs: 0,
+  });
+
+  //Loader state
+  const [isStatsLoading, setIsStatsLoading] = useState(false);
 
   // Delete modal state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -24,6 +40,31 @@ const AllBlogs: React.FC = () => {
     views: number;
     date: string;
   } | null>(null);
+
+  const handleBlogStats = async () => {
+    try {
+      setIsStatsLoading(true);
+      const response = await getBlogStats();
+      setBlogStats(response.data.stats);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsStatsLoading(false);
+    }
+  };
+  const handleBlogs = async () => {
+    try {
+      const blogs = await getBlogs();
+      console.log(blogs);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleBlogStats();
+    handleBlogs();
+  }, []);
 
   // Mock data - converted to state
   const [blogs, setBlogs] = useState([
@@ -126,11 +167,37 @@ const AllBlogs: React.FC = () => {
     });
   }, [blogs, selectedCategory, selectedStatus]);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredBlogs.length / pageSize));
+  }, [filteredBlogs.length, pageSize]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedStatus]);
+
+  // Ensure currentPage remains within bounds when data changes
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  // Slice filtered results for the current page
+  const pagedBlogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredBlogs.slice(startIndex, startIndex + pageSize);
+  }, [filteredBlogs, currentPage, pageSize]);
+
   // Calculate summary statistics
   const summaryCards = [
     {
       title: "Total Blogs",
-      value: "247",
+      value: String(blogStats.totalBlogs),
       icon: (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -146,7 +213,7 @@ const AllBlogs: React.FC = () => {
     },
     {
       title: "Published",
-      value: "189",
+      value: String(blogStats.publishedBlogs),
       icon: (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -162,7 +229,7 @@ const AllBlogs: React.FC = () => {
     },
     {
       title: "Drafts",
-      value: "42",
+      value: String(blogStats.draftBlogs),
       icon: (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -204,8 +271,16 @@ const AllBlogs: React.FC = () => {
     setDeletingBlog(null);
   };
 
+  if (isStatsLoading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-10rem)] px-4 py-3">
+        <div className="animate-spin rounded-full w-12 h-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-4">
       {/* Page Header */}
       <PageHeader
         selectedCategory={selectedCategory}
@@ -219,9 +294,17 @@ const AllBlogs: React.FC = () => {
 
       {/* Blog Table */}
       <BlogTable
-        blogs={filteredBlogs}
+        blogs={pagedBlogs}
         onEdit={handleEdit}
         onDelete={handleDelete}
+      />
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalItems={filteredBlogs.length}
+        onPageChange={setCurrentPage}
       />
 
       {/* Delete Blog Modal */}

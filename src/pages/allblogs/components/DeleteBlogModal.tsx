@@ -166,7 +166,8 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                 {/* Warning Message */}
                 <div className="text-center">
                   <p className="text-gray-700 mb-4">
-                    Are you sure you want to delete this blog post? This action cannot be undone.
+                    Are you sure you want to delete this blog post? This action
+                    cannot be undone.
                   </p>
                 </div>
 
@@ -184,7 +185,7 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                       <h4 className="font-semibold text-gray-900 text-sm leading-tight mb-2">
                         {blog.title}
                       </h4>
-                      
+
                       {/* Author */}
                       <div className="flex items-center space-x-2 mb-2">
                         <div className="flex-shrink-0 h-6 w-6">
@@ -202,7 +203,9 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                             </div>
                           )}
                         </div>
-                        <span className="text-xs text-gray-600">{blog.author.name}</span>
+                        <span className="text-xs text-gray-600">
+                          {blog.author.name}
+                        </span>
                       </div>
 
                       {/* Category and Status */}
@@ -219,7 +222,8 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                             blog.status
                           )}`}
                         >
-                          {blog.status.charAt(0).toUpperCase() + blog.status.slice(1)}
+                          {blog.status.charAt(0).toUpperCase() +
+                            blog.status.slice(1)}
                         </span>
                       </div>
 
@@ -254,7 +258,8 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                           This is a published post
                         </p>
                         <p className="text-xs text-yellow-700 mt-1">
-                          Deleting this post will remove it from your website and it will no longer be accessible to readers.
+                          Deleting this post will remove it from your website
+                          and it will no longer be accessible to readers.
                         </p>
                       </div>
                     </div>
@@ -286,10 +291,12 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                       </svg>
                       <div>
                         <p className="text-sm font-medium text-blue-800">
-                          Post has {blog.views} view{blog.views !== 1 ? 's' : ''}
+                          Post has {blog.views} view
+                          {blog.views !== 1 ? "s" : ""}
                         </p>
                         <p className="text-xs text-blue-700 mt-1">
-                          This post has been viewed by readers. Deleting it will remove all engagement data.
+                          This post has been viewed by readers. Deleting it will
+                          remove all engagement data.
                         </p>
                       </div>
                     </div>
@@ -365,4 +372,4 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
   );
 };
 
-export default DeleteBlogModal; 
+export default DeleteBlogModal;

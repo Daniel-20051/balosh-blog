@@ -45,7 +45,7 @@ const BlogTable: React.FC<BlogTableProps> = ({ blogs, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-h-[60vh] overflow-y-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
