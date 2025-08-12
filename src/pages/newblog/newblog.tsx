@@ -10,7 +10,6 @@ const NewBlog: React.FC = () => {
   // Form state
   const [title, setTitle] = useState("");
   const [featuredImage, setFeaturedImage] = useState<string | null>(null);
-  const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState("");
 
   // Publish settings
@@ -34,7 +33,7 @@ const NewBlog: React.FC = () => {
     // Save draft logic here
     const blogData = {
       title,
-      content, // This contains the HTML from Froala editor
+      content: "", // This contains the HTML from Froala editor
       excerpt,
       featuredImage,
       status: "draft",
@@ -51,7 +50,6 @@ const NewBlog: React.FC = () => {
     // Publish logic here
     const blogData = {
       title,
-      content, // This contains the HTML from Froala editor
       excerpt,
       featuredImage,
       status: "published",
@@ -133,7 +131,7 @@ const NewBlog: React.FC = () => {
           />
 
           {/* Content Editor */}
-          <ContentEditor content={content} onContentChange={setContent} />
+          <ContentEditor />
 
           {/* Excerpt */}
           <ExcerptInput excerpt={excerpt} onExcerptChange={setExcerpt} />
