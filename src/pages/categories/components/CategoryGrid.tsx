@@ -5,7 +5,7 @@ interface Category {
   name: string;
   description: string;
   postCount: number;
-  status: "active" | "inactive";
+  isActive: boolean;
   icon: React.ReactNode;
   iconBgColor: string;
 }
@@ -31,8 +31,8 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
     );
   }, [categories, searchTerm]);
 
-  const getStatusColor = (status: string) => {
-    return status === "active"
+  const getStatusColor = (isActive: boolean) => {
+    return isActive
       ? "bg-green-100 text-green-800"
       : "bg-yellow-100 text-yellow-800";
   };
@@ -47,7 +47,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
           >
             <div className="h-6 bg-gray-200 rounded w-3/5 mb-4" />
             <div className="space-y-2">
-              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-200 rounded w/full" />
               <div className="h-4 bg-gray-200 rounded w-4/5" />
             </div>
             <div className="mt-6 flex justify-between">
@@ -161,11 +161,10 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
                 </span>
                 <span
                   className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                    category.status
+                    category.isActive
                   )}`}
                 >
-                  {category.status.charAt(0).toUpperCase() +
-                    category.status.slice(1)}
+                  {category.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
             </div>

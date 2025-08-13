@@ -15,7 +15,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ onAddCategory }) => {
       </div>
       <button
         onClick={onAddCategory}
-        className="bg-black text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-gray-800 transition-colors"
+        className="bg-black cursor-pointer text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-gray-800 transition-colors"
       >
         <svg
           className="w-5 h-5"

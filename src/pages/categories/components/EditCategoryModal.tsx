@@ -6,7 +6,7 @@ interface Category {
   name: string;
   description: string;
   postCount: number;
-  status: "active" | "inactive";
+  isActive: boolean;
   icon: React.ReactNode;
   iconBgColor: string;
 }
@@ -18,7 +18,7 @@ interface EditCategoryModalProps {
     id: number,
     name: string,
     description: string,
-    status: "active" | "inactive"
+    isActive: boolean
   ) => void;
   category: Category | null;
 }
@@ -39,7 +39,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     if (category) {
       setName(category.name);
       setDescription(category.description);
-      setStatus(category.status);
+      setStatus(category.isActive ? "active" : "inactive");
     }
   }, [category]);
 
@@ -49,7 +49,12 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      await onEdit(category.id, name.trim(), description.trim(), status);
+      await onEdit(
+        category.id,
+        name.trim(),
+        description.trim(),
+        status === "active"
+      );
       onClose();
     } catch (error) {
       console.error("Error editing category:", error);

@@ -5,8 +5,9 @@ import CategoryGrid from "./components/CategoryGrid";
 import AddCategoryModal from "./components/AddCategoryModal";
 import EditCategoryModal from "./components/EditCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
-import { getCategories } from "./api";
+import { getCategories, addCategory, deleteCategory } from "./api";
 import { getIconById } from "./icons";
+import Toast from "../../components/Toast";
 
 const Categories: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +17,7 @@ const Categories: React.FC = () => {
     name: string;
     description: string;
     postCount: number;
-    status: "active" | "inactive";
+    isActive: boolean;
     icon: React.ReactNode;
     iconBgColor: string;
   } | null>(null);
@@ -26,7 +27,7 @@ const Categories: React.FC = () => {
     name: string;
     description: string;
     postCount: number;
-    status: "active" | "inactive";
+    isActive: boolean;
     icon: React.ReactNode;
     iconBgColor: string;
   } | null>(null);
@@ -39,12 +40,14 @@ const Categories: React.FC = () => {
       name: string;
       description: string;
       postCount: number;
-      status: "active" | "inactive";
+      isActive: boolean;
       icon: React.ReactNode;
       iconBgColor: string;
     }>
   >([]);
-
+  const [isToastVisible, setIsToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
   // icon mapping moved to shared palette with numeric ids
 
   useEffect(() => {
@@ -60,20 +63,18 @@ const Categories: React.FC = () => {
           name: string;
           description: string;
           postCount: number;
-          status: "active" | "inactive";
+          isActive: boolean;
           icon: React.ReactNode;
           iconBgColor: string;
-        }> = (apiCategories as Array<any>).map((item, index) => {
+        }> = (apiCategories as Array<any>).map((item) => {
           const palette = getIconById(Number(item?.icon) || 1);
 
           return {
-            id: index + 1,
+            id: item?._id,
             name: String(item?.name ?? "Untitled"),
             description: String(item?.description ?? ""),
-            postCount: Number(item?.postCount) || 0,
-            status: (item?.isActive ? "active" : "inactive") as
-              | "active"
-              | "inactive",
+            postCount: Number(item?.blogCount) || 0,
+            isActive: Boolean(item?.isActive),
             icon: palette.icon,
             iconBgColor: palette.bgColor,
           };
@@ -81,7 +82,6 @@ const Categories: React.FC = () => {
 
         setCategories(mapped);
         setCategoryNumber(mapped.length);
-        setMostPopularCategory(mapped[0].name);
       } catch (error) {
         console.error("Failed to load categories", error);
       } finally {
@@ -91,6 +91,18 @@ const Categories: React.FC = () => {
 
     loadCategories();
   }, []);
+
+  // keep mostPopularCategory in sync with highest postCount
+  useEffect(() => {
+    if (categories.length === 0) {
+      setMostPopularCategory("");
+      return;
+    }
+    const top = categories.reduce((max, cur) =>
+      cur.postCount > max.postCount ? cur : max
+    );
+    setMostPopularCategory(top.name);
+  }, [categories]);
 
   // Mock data for summary cards
   const summaryCards = [
@@ -147,41 +159,51 @@ const Categories: React.FC = () => {
   const handleAddCategory = async (
     name: string,
     description: string,
-    status: "active" | "inactive"
+    isActive: boolean,
+    iconID: number
   ) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Call the API to add the category
+      const response = await addCategory(name, description, isActive, iconID);
 
-    console.log("Adding new category:", { name, description, status });
+      if (response.success) {
+        // Create new category object for local state
+        const palette = getIconById(iconID);
+        const newCategory = {
+          id: Math.max(...categories.map((cat) => cat.id)) + 1, // Generate new ID
+          name,
+          description,
+          postCount: 0, // New categories start with 0 posts
+          isActive,
+          icon: palette.icon,
+          iconBgColor: palette.bgColor,
+        };
 
-    // Create new category object
-    // Keep a default visual since icons are now removed from the form
-    const palette = getIconById(1);
-    const newCategory = {
-      id: Math.max(...categories.map((cat) => cat.id)) + 1, // Generate new ID
-      name,
-      description,
-      postCount: 0, // New categories start with 0 posts
-      status,
-      icon: palette.icon,
-      iconBgColor: palette.bgColor,
-    };
+        // Add new category to the list
+        setCategories((prevCategories) => [...prevCategories, newCategory]);
 
-    // Add new category to the list
-    setCategories((prevCategories) => [...prevCategories, newCategory]);
+        // Update category count
+        setCategoryNumber((prev) => prev + 1);
+        setIsToastVisible(true);
+        setToastMessage("Category added successfully");
+        setToastType("success");
+      } else {
+        console.error("Failed to add category:", response);
+        setToastMessage("Failed to add category");
+        setToastType("error");
+        setIsToastVisible(true);
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+    }
   };
 
   const handleEditCategory = async (
     id: number,
     name: string,
     description: string,
-    status: "active" | "inactive"
+    isActive: boolean
   ) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Editing category:", { id, name, description, status });
-
     // Update the category in the list
     setCategories((prevCategories) =>
       prevCategories.map((cat) => {
@@ -190,22 +212,32 @@ const Categories: React.FC = () => {
           ...cat,
           name,
           description,
-          status,
+          isActive,
         };
       })
     );
   };
 
   const handleDeleteCategory = async (id: number) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Deleting category:", { id });
-
-    // Remove the category from the list
-    setCategories((prevCategories) =>
-      prevCategories.filter((cat) => cat.id !== id)
-    );
+    try {
+      const response = await deleteCategory(id);
+      if (response.success) {
+        setCategories((prevCategories) =>
+          prevCategories.filter((cat) => cat.id !== id)
+        );
+        setCategoryNumber((prev) => prev - 1);
+        setToastMessage("Category deleted successfully");
+        setToastType("success");
+        setIsToastVisible(true);
+      } else {
+        console.error("Failed to delete category:", response);
+        setToastMessage("Failed to delete category");
+        setToastType("error");
+        setIsToastVisible(true);
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
   };
 
   const openModal = () => {
@@ -227,7 +259,14 @@ const Categories: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-4">
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        isVisible={isToastVisible}
+        duration={2500}
+        onClose={() => {}}
+      />
       {/* Page Header */}
       <PageHeader onAddCategory={openModal} />
 

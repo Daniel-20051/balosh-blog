@@ -5,7 +5,7 @@ interface Category {
   name: string;
   description: string;
   postCount: number;
-  status: "active" | "inactive";
+  isActive: boolean;
   icon: React.ReactNode;
   iconBgColor: string;
 }
@@ -164,12 +164,12 @@ const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({
                         <span>{category.postCount} posts</span>
                         <span
                           className={`px-2 py-1 rounded-full text-xs ${
-                            category.status === "active"
+                            category.isActive
                               ? "bg-green-100 text-green-800"
                               : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {category.status}
+                          {category.isActive ? "active" : "inactive"}
                         </span>
                       </div>
                     </div>
