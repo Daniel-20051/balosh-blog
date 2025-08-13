@@ -1,5 +1,5 @@
 // Cookie utility functions
-export const setCookie = (name: string, value: string, hours: number = 15) => {
+export const setCookie = (name: string, value: string, hours: number = 5) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + (hours * 60 * 60 * 1000));
   
@@ -24,7 +24,7 @@ export const removeCookie = (name: string) => {
 
 // Token-specific cookie functions
 export const setAuthToken = (token: string) => {
-  setCookie('authToken', token, 15);
+  setCookie('authToken', token, 5);
 };
 
 export const getAuthToken = (): string | null => {

@@ -14,12 +14,14 @@ interface CategoryGridProps {
   categories: Category[];
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
+  isLoading?: boolean;
 }
 
 const CategoryGrid: React.FC<CategoryGridProps> = ({
   categories,
   onEdit,
   onDelete,
+  isLoading,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -34,6 +36,29 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
       ? "bg-green-100 text-green-800"
       : "bg-yellow-100 text-yellow-800";
   };
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <div
+            key={idx}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse"
+          >
+            <div className="h-6 bg-gray-200 rounded w-3/5 mb-4" />
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-200 rounded w-4/5" />
+            </div>
+            <div className="mt-6 flex justify-between">
+              <div className="h-4 bg-gray-200 rounded w-16" />
+              <div className="h-6 bg-gray-200 rounded w-20" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

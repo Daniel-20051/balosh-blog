@@ -1,52 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ButtonLink from "../../components/ButtonLink";
 import SummaryCards from "./components/SummaryCards";
 import RecentBlogActivity from "./components/RecentBlogActivity";
+import { getBlogStats, getRecentBlogs } from "./api";
 
 const Dashboard: React.FC = () => {
-  const recentBlogs = [
-    {
-      id: 1,
-      title: "The Future of Web Design Trends",
-      author: "John Doe",
-      time: "2 hours ago",
-      status: "Published",
-      avatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
-    },
-    {
-      id: 2,
-      title: "Understanding User Experience Principles",
-      author: "Sarah Smith",
-      time: "1 day ago",
-      status: "Draft",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face",
-    },
-    {
-      id: 4,
-      title: "Mobile-First Design Strategies",
-      author: "Emma Wilson",
-      time: "5 days ago",
-      status: "Review",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face",
-    },
-    {
-      id: 5,
-      title: "Advanced JavaScript Patterns",
-      author: "Alex Chen",
-      time: "1 week ago",
-      status: "Pending",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face",
-    },
-  ];
+  const [totalBlogs, setTotalBlogs] = useState(0);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [isStatsLoading, setIsStatsLoading] = useState(false);
+  const [isRecentLoading, setIsRecentLoading] = useState(false);
+  const [recentBlogs, setRecentBlogs] = useState<
+    Array<{
+      id: number;
+      title: string;
+      author: string;
+      time: string;
+      status: string;
+      avatar: string | null;
+    }>
+  >([]);
 
   const summaryCards = [
     {
       title: "Total Blogs",
-      value: "247",
+      value: totalBlogs,
       icon: (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -62,7 +39,7 @@ const Dashboard: React.FC = () => {
     },
     {
       title: "Total Likes",
-      value: "3.2K",
+      value: totalLikes,
       icon: (
         <svg fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -105,8 +82,82 @@ const Dashboard: React.FC = () => {
     </svg>
   );
 
+  const fetchBlogStats = async () => {
+    try {
+      setIsStatsLoading(true);
+      const response = await getBlogStats();
+      setTotalBlogs(response.data.stats.totalBlogs);
+      setTotalLikes(response.data.stats.totalLikes);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsStatsLoading(false);
+    }
+  };
+
+  const fetchRecentBlogs = async () => {
+    try {
+      setIsRecentLoading(true);
+      const response = await getRecentBlogs();
+      const apiBlogs = Array.isArray(response.data.blogs)
+        ? response.data.blogs
+        : [];
+
+      const toTitleCase = (s: string) =>
+        s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
+
+      const timeAgo = (iso?: string) => {
+        if (!iso) return "";
+        const then = new Date(iso).getTime();
+        const now = Date.now();
+        const diff = Math.max(0, Math.floor((now - then) / 1000));
+        if (diff < 60) return "just now";
+        const minutes = Math.floor(diff / 60);
+        if (minutes < 60)
+          return `${minutes} min${minutes === 1 ? "" : "s"} ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+        const weeks = Math.floor(days / 7);
+        return `${weeks} week${weeks === 1 ? "" : "s"} ago`;
+      };
+
+      const mapped = apiBlogs.map((b: any, idx: number) => {
+        const authorFirst = b?.author?.firstName || "";
+        const authorLast = b?.author?.lastName || "";
+        const authorUsername = b?.author?.username || "";
+        const authorName = `${
+          (authorFirst + " " + authorLast).trim() || authorUsername || "Unknown"
+        }`;
+        const statusRaw = String(b?.status);
+        const status = toTitleCase(statusRaw);
+        const date = b?.updatedAt;
+        return {
+          id: idx + 1,
+          title: b?.title,
+          author: authorName,
+          time: timeAgo(date),
+          status,
+          avatar: b?.author?.profilePhoto || null,
+        };
+      });
+
+      setRecentBlogs(mapped);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsRecentLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogStats();
+    fetchRecentBlogs();
+  }, []);
+
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="space-y-4 lg:space-y-6 pb-4">
       {/* Dashboard Title and Quick Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl lg:text-3xl font-bold text-[#000000]">
@@ -131,10 +182,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <SummaryCards cards={summaryCards} />
+      <SummaryCards cards={summaryCards} isLoading={isStatsLoading} />
 
       {/* Recent Blog Activity */}
-      <RecentBlogActivity blogs={recentBlogs} />
+      <RecentBlogActivity blogs={recentBlogs} isLoading={isRecentLoading} />
     </div>
   );
 };

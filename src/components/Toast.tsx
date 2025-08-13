@@ -32,7 +32,7 @@ const Toast = ({
   if (!isVisible) return null;
 
   const baseClasses =
-    "fixed top-4 right-4 z-50 max-w-sm w-full p-4 rounded-lg shadow-lg transform transition-all duration-300";
+    "fixed top-4 right-4 z-500 max-w-sm w-full p-4 rounded-lg shadow-lg transform transition-all duration-300";
 
   const typeClasses = {
     success: "bg-green-50 border border-green-200 text-green-800",

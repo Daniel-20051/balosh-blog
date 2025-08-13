@@ -2,15 +2,24 @@ import React, { useState, useMemo, useEffect } from "react";
 import PageHeader from "./components/PageHeader";
 import SummaryCards from "./components/SummaryCards";
 import BlogTable from "./components/BlogTable";
+import EditBlogModal from "./components/EditBlogModal";
 import DeleteBlogModal from "./components/DeleteBlogModal";
-import { getBlogs, getBlogStats } from "./api";
+import { getBlogs, getBlogStats, editBlog, deleteBlog } from "./api";
 import Pagination from "../../components/Pagination";
+import Toast from "../../components/Toast";
 
 const AllBlogs: React.FC = () => {
   // Filter state
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
+  //loader state
+  const [isEditLoading, setIsEditLoading] = useState(false);
+
+  //toast state
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [toastVisible, setToastVisible] = useState(false);
   //Blog stats state
   const [blogStats, setBlogStats] = useState<{
     totalBlogs: number;
@@ -28,6 +37,7 @@ const AllBlogs: React.FC = () => {
 
   // Delete modal state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deletingBlog, setDeletingBlog] = useState<{
     id: number;
     title: string;
@@ -77,23 +87,26 @@ const AllBlogs: React.FC = () => {
         })}`;
       };
 
-      const mappedBlogs = (payload.blogs as any[]).map(
-        (b: any, idx: number) => ({
-          id: idx + 1, // fallback numeric id for UI purposes
-          title: b?.title ?? "Untitled",
-          thumbnail:
-            b?.featuredImage ||
-            "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=40&h=40&fit=crop",
-          category: b?.category?.name || b?.category || "uncategorized",
-          author: {
-            name: b?.author?.firstName || b?.author?.username || "Unknown",
-            avatar: b?.author?.avatar || null,
-          },
-          status: (b?.status || "draft").toLowerCase(),
-          views: Number(b?.views ?? 0),
-          date: formatDateLabel(b),
-        })
-      );
+      const mappedBlogs = (payload.blogs as any[]).map((b: any) => ({
+        id: b._id,
+        title: b?.title ?? "Untitled",
+        thumbnail:
+          b?.featuredImage ||
+          "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=40&h=40&fit=crop",
+        category: b?.category?._id,
+        categoryName: b?.category?.name,
+        author: {
+          name: b?.author?.firstName || b?.author?.username || "Unknown",
+          avatar: b?.author?.avatar || null,
+        },
+        content: b?.content || "",
+        excerpt: b?.excerpt || "",
+        metaTitle: b?.metaTitle || "",
+        metaDescription: b?.metaDescription || "",
+        status: (b?.status || "draft").toLowerCase(),
+        views: Number(b?.views ?? 0),
+        date: formatDateLabel(b),
+      }));
 
       setBlogs(mappedBlogs);
     } catch (error) {
@@ -116,10 +129,15 @@ const AllBlogs: React.FC = () => {
       thumbnail:
         "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=40&h=40&fit=crop",
       category: "technology",
+      categoryName: "Technology",
       author: {
         name: "Sarah Johnson",
         avatar: null,
       },
+      content: "This is a test content",
+      excerpt: "This is a test excerpt",
+      metaTitle: "This is a test meta title",
+      metaDescription: "This is a test meta description",
       status: "published",
       views: 1200,
       date: "Published on March 15, 2024",
@@ -215,9 +233,28 @@ const AllBlogs: React.FC = () => {
     },
   ];
 
+  const [editingBlog, setEditingBlog] = useState<{
+    id: number;
+    title: string;
+    thumbnail: string;
+    category: string;
+    author: {
+      name: string;
+      avatar: string | null;
+    };
+    content: string;
+    excerpt: string;
+    metaTitle: string;
+    metaDescription: string;
+    status: string;
+    views: number;
+    date: string;
+  } | null>(null);
+
   const handleEdit = (id: number) => {
-    console.log("Edit blog:", id);
-    // Navigate to edit page or open edit modal
+    const blog = blogs.find((b) => b.id === id) || null;
+    setEditingBlog(blog);
+    setIsEditModalOpen(true);
   };
 
   const handleDelete = (id: number) => {
@@ -229,11 +266,19 @@ const AllBlogs: React.FC = () => {
   };
 
   const handleDeleteBlog = async (id: number) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Remove the blog from the list
-    setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+    const response: any = await deleteBlog(id.toString());
+    console.log(response);
+    if (response.success) {
+      handleBlogStats();
+      setToastMessage("Blog deleted successfully");
+      setToastType("success");
+      setToastVisible(true);
+      setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+    } else {
+      setToastMessage("Failed to delete blog");
+      setToastType("error");
+      setToastVisible(true);
+    }
   };
 
   const closeDeleteModal = () => {
@@ -241,16 +286,86 @@ const AllBlogs: React.FC = () => {
     setDeletingBlog(null);
   };
 
-  if (isStatsLoading) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-10rem)] px-4 py-3">
-        <div className="animate-spin rounded-full w-12 h-12 border-b-2 border-primary"></div>
-      </div>
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingBlog(null);
+  };
+
+  const handleSaveEditedBlog = async (updated: {
+    id: number;
+    title: string;
+    featuredImage: string | null;
+    featuredImageFile: File | null;
+    contentHtml: string;
+    excerpt: string;
+    status: string;
+    category: string;
+    tags: string;
+    metaTitle: string;
+    metaDescription: string;
+  }) => {
+    setIsEditLoading(true);
+    console.log(updated);
+    const response: any = await editBlog(
+      updated.id.toString(),
+      updated.featuredImageFile ?? null,
+      updated.title,
+      updated.contentHtml,
+      updated.excerpt,
+      updated.category,
+      updated.status,
+      updated.tags,
+      updated.metaTitle,
+      updated.metaDescription
     );
-  }
+
+    const isSuccess = response.data.success;
+
+    if (isSuccess) {
+      handleBlogStats();
+      setToastMessage("Blog updated successfully");
+      setToastType("success");
+      setToastVisible(true);
+      // Update local state for UI feedback
+      setBlogs((prev) =>
+        prev.map((b) =>
+          b.id === updated.id
+            ? {
+                ...b,
+                title: updated.title,
+                thumbnail: updated.featuredImage || b.thumbnail,
+                status: updated.status,
+                category: updated.category,
+                content: updated.contentHtml,
+                excerpt: updated.excerpt,
+                metaTitle: updated.metaTitle,
+                metaDescription: updated.metaDescription,
+              }
+            : b
+        )
+      );
+    } else {
+      setToastMessage("Failed to update blog");
+      setToastType("error");
+      setToastVisible(true);
+    }
+
+    setIsEditLoading(false);
+
+    // Return success status so modal can decide whether to close
+    return { success: isSuccess };
+  };
 
   return (
     <div className="space-y-6 pb-4">
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        isVisible={toastVisible}
+        onClose={() => {
+          setToastVisible(false);
+        }}
+      />
       {/* Page Header */}
       <PageHeader
         selectedCategory={selectedCategory}
@@ -260,7 +375,7 @@ const AllBlogs: React.FC = () => {
       />
 
       {/* Summary Cards */}
-      <SummaryCards cards={summaryCards} />
+      <SummaryCards cards={summaryCards} isLoading={isStatsLoading} />
 
       {/* Blog Table */}
       <BlogTable
@@ -284,6 +399,15 @@ const AllBlogs: React.FC = () => {
         onClose={closeDeleteModal}
         onDelete={handleDeleteBlog}
         blog={deletingBlog}
+      />
+
+      {/* Edit Blog Modal */}
+      <EditBlogModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        blog={editingBlog}
+        onSave={handleSaveEditedBlog}
+        isLoading={isEditLoading}
       />
     </div>
   );

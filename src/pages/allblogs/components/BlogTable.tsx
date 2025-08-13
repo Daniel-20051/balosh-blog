@@ -5,6 +5,7 @@ interface Blog {
   title: string;
   thumbnail: string;
   category: string;
+  categoryName: string;
   author: {
     name: string;
     avatar: string | null;
@@ -27,16 +28,13 @@ const BlogTable: React.FC<BlogTableProps> = ({
   onDelete,
   isLoading = false,
 }) => {
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = (categoryName: string) => {
     const colors = {
-      technology: "bg-blue-100 text-blue-800",
-      design: "bg-purple-100 text-purple-800",
-      business: "bg-green-100 text-green-800",
-      lifestyle: "bg-pink-100 text-pink-800",
-      tutorial: "bg-yellow-100 text-yellow-800",
+      Technology: "bg-blue-100 text-blue-800",
+      security: "bg-yellow-100 text-yellow-800",
     };
     return (
-      colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
+      colors[categoryName as keyof typeof colors] || "bg-gray-100 text-gray-800"
     );
   };
 
@@ -44,7 +42,6 @@ const BlogTable: React.FC<BlogTableProps> = ({
     const colors = {
       published: "bg-green-100 text-green-800",
       draft: "bg-orange-100 text-orange-800",
-      pending: "bg-blue-100 text-blue-800",
     };
     return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
@@ -131,10 +128,10 @@ const BlogTable: React.FC<BlogTableProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(
-                        blog.category
+                        blog.categoryName
                       )}`}
                     >
-                      {blog.category}
+                      {blog.categoryName}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -155,7 +152,7 @@ const BlogTable: React.FC<BlogTableProps> = ({
                         )}
                       </div>
                       <div className="ml-3">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm capitalize font-medium text-gray-900">
                           {blog.author.name}
                         </div>
                       </div>

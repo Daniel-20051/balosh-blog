@@ -1,4 +1,5 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { getCategories } from "../api";
 
 interface PublishSettingsProps {
   status: string;
@@ -8,9 +9,10 @@ interface PublishSettingsProps {
   onStatusChange: (status: string) => void;
   onCategoryChange: (category: string) => void;
   onTagsChange: (tags: string) => void;
+  isCategoryEditable?: boolean;
 }
 
-const PublishSettings: React.FC<PublishSettingsProps> = ({
+const PublishSettings = ({
   status,
   category,
   tags,
@@ -18,7 +20,28 @@ const PublishSettings: React.FC<PublishSettingsProps> = ({
   onStatusChange,
   onCategoryChange,
   onTagsChange,
-}) => {
+  isCategoryEditable = true,
+}: PublishSettingsProps) => {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const handleCategories = async () => {
+    try {
+      const response = await getCategories();
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!category && categories.length > 0) {
+      onCategoryChange(categories[0]._id);
+    }
+  }, [categories, category, onCategoryChange]);
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -38,7 +61,6 @@ const PublishSettings: React.FC<PublishSettingsProps> = ({
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>
-            <option value="pending">Pending Review</option>
           </select>
         </div>
 
@@ -48,15 +70,20 @@ const PublishSettings: React.FC<PublishSettingsProps> = ({
             Category
           </label>
           <select
-            value={category}
+            value={category || (categories[0]?._id ?? "")}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326]"
+            disabled={!isCategoryEditable}
+            className={`w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] ${
+              !isCategoryEditable
+                ? "bg-gray-100 cursor-not-allowed opacity-60"
+                : ""
+            }`}
           >
-            <option value="technology">Technology</option>
-            <option value="design">Design</option>
-            <option value="business">Business</option>
-            <option value="lifestyle">Lifestyle</option>
-            <option value="tutorial">Tutorial</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
           </select>
         </div>
 

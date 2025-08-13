@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageHeader from "./components/PageHeader";
 import SummaryCards from "./components/SummaryCards";
 import CategoryGrid from "./components/CategoryGrid";
 import AddCategoryModal from "./components/AddCategoryModal";
 import EditCategoryModal from "./components/EditCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
+import { getCategories } from "./api";
+import { getIconById } from "./icons";
 
 const Categories: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +30,9 @@ const Categories: React.FC = () => {
     icon: React.ReactNode;
     iconBgColor: string;
   } | null>(null);
+  const [categoryNumber, setCategoryNumber] = useState(0);
+  const [mostPopularCategory, setMostPopularCategory] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<
     Array<{
       id: number;
@@ -38,122 +43,60 @@ const Categories: React.FC = () => {
       icon: React.ReactNode;
       iconBgColor: string;
     }>
-  >([
-    {
-      id: 1,
-      name: "Technology",
-      description: "Latest tech trends, gadgets, and innovations",
-      postCount: 42,
-      status: "active" as const,
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-          />
-        </svg>
-      ),
-      iconBgColor: "bg-blue-500",
-    },
-    {
-      id: 2,
-      name: "Design",
-      description: "UI/UX design principles and creative inspiration",
-      postCount: 28,
-      status: "active" as const,
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
-          />
-        </svg>
-      ),
-      iconBgColor: "bg-green-500",
-    },
-    {
-      id: 3,
-      name: "Development",
-      description: "Programming tutorials and coding best practices",
-      postCount: 35,
-      status: "active" as const,
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-          />
-        </svg>
-      ),
-      iconBgColor: "bg-purple-500",
-    },
-    {
-      id: 4,
-      name: "Innovation",
-      description: "Creative ideas and innovative solutions",
-      postCount: 19,
-      status: "active" as const,
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-          />
-        </svg>
-      ),
-      iconBgColor: "bg-pink-500",
-    },
-    {
-      id: 5,
-      name: "Business",
-      description: "Entrepreneurship and business strategies",
-      postCount: 23,
-      status: "active" as const,
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-          />
-        </svg>
-      ),
-      iconBgColor: "bg-orange-500",
-    },
-    {
-      id: 6,
-      name: "Lifestyle",
-      description: "Personal development and life tips",
-      postCount: 15,
-      status: "inactive" as const,
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-          />
-        </svg>
-      ),
-      iconBgColor: "bg-red-500",
-    },
-  ]);
+  >([]);
+
+  // icon mapping moved to shared palette with numeric ids
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getCategories();
+        const apiCategories =
+          response?.data?.categories ?? response?.categories ?? [];
+
+        const mapped: Array<{
+          id: number;
+          name: string;
+          description: string;
+          postCount: number;
+          status: "active" | "inactive";
+          icon: React.ReactNode;
+          iconBgColor: string;
+        }> = (apiCategories as Array<any>).map((item, index) => {
+          const palette = getIconById(Number(item?.icon) || 1);
+
+          return {
+            id: index + 1,
+            name: String(item?.name ?? "Untitled"),
+            description: String(item?.description ?? ""),
+            postCount: Number(item?.postCount) || 0,
+            status: (item?.isActive ? "active" : "inactive") as
+              | "active"
+              | "inactive",
+            icon: palette.icon,
+            iconBgColor: palette.bgColor,
+          };
+        });
+
+        setCategories(mapped);
+        setCategoryNumber(mapped.length);
+        setMostPopularCategory(mapped[0].name);
+      } catch (error) {
+        console.error("Failed to load categories", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Mock data for summary cards
   const summaryCards = [
     {
       title: "Total Categories",
-      value: "12",
+      value: categoryNumber.toString(),
       icon: (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -169,7 +112,7 @@ const Categories: React.FC = () => {
     },
     {
       title: "Most Popular",
-      value: "Technology",
+      value: mostPopularCategory,
       icon: (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -182,22 +125,6 @@ const Categories: React.FC = () => {
       ),
       bgColor: "bg-green-100",
       iconColor: "text-green-600",
-    },
-    {
-      title: "Uncategorized Posts",
-      value: "8",
-      icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
-      ),
-      bgColor: "bg-orange-100",
-      iconColor: "text-orange-600",
     },
   ];
 
@@ -220,23 +147,24 @@ const Categories: React.FC = () => {
   const handleAddCategory = async (
     name: string,
     description: string,
-    icon: React.ReactNode,
-    iconBgColor: string
+    status: "active" | "inactive"
   ) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    console.log("Adding new category:", { name, description, iconBgColor });
+    console.log("Adding new category:", { name, description, status });
 
     // Create new category object
+    // Keep a default visual since icons are now removed from the form
+    const palette = getIconById(1);
     const newCategory = {
       id: Math.max(...categories.map((cat) => cat.id)) + 1, // Generate new ID
       name,
       description,
       postCount: 0, // New categories start with 0 posts
-      status: "active" as const,
-      icon,
-      iconBgColor,
+      status,
+      icon: palette.icon,
+      iconBgColor: palette.bgColor,
     };
 
     // Add new category to the list
@@ -247,27 +175,24 @@ const Categories: React.FC = () => {
     id: number,
     name: string,
     description: string,
-    icon: React.ReactNode,
-    iconBgColor: string
+    status: "active" | "inactive"
   ) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    console.log("Editing category:", { id, name, description, iconBgColor });
+    console.log("Editing category:", { id, name, description, status });
 
     // Update the category in the list
     setCategories((prevCategories) =>
-      prevCategories.map((cat) =>
-        cat.id === id
-          ? {
-              ...cat,
-              name,
-              description,
-              icon,
-              iconBgColor,
-            }
-          : cat
-      )
+      prevCategories.map((cat) => {
+        if (cat.id !== id) return cat;
+        return {
+          ...cat,
+          name,
+          description,
+          status,
+        };
+      })
     );
   };
 
@@ -307,13 +232,14 @@ const Categories: React.FC = () => {
       <PageHeader onAddCategory={openModal} />
 
       {/* Summary Cards */}
-      <SummaryCards cards={summaryCards} />
+      <SummaryCards cards={summaryCards} isLoading={isLoading} />
 
       {/* Category Grid */}
       <CategoryGrid
         categories={categories}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isLoading}
       />
 
       {/* Add Category Modal */}

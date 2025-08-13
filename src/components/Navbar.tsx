@@ -152,7 +152,9 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onLogout }) => {
             >
               {user ? (
                 <>
-                  <span className="hidden sm:inline">{user.firstName}</span>
+                  <span className="hidden capitalize sm:inline">
+                    {user.firstName}
+                  </span>
                   <div className="flex items-center space-x-2">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {user.role}

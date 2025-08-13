@@ -197,13 +197,13 @@ const DeleteBlogModal: React.FC<DeleteBlogModalProps> = ({
                             />
                           ) : (
                             <div className="h-6 w-6 bg-gray-300 rounded-full flex items-center justify-center">
-                              <span className="text-xs font-medium text-gray-600">
+                              <span className="text-xs uppercase font-medium text-gray-600">
                                 {blog.author.name.charAt(0)}
                               </span>
                             </div>
                           )}
                         </div>
-                        <span className="text-xs text-gray-600">
+                        <span className="text-xs capitalize text-gray-600">
                           {blog.author.name}
                         </span>
                       </div>

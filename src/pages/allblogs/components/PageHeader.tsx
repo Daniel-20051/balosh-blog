@@ -1,5 +1,6 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getCategories } from "../api";
 
 interface PageHeaderProps {
   selectedCategory: string;
@@ -8,12 +9,27 @@ interface PageHeaderProps {
   onStatusChange: (status: string) => void;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({
+const PageHeader = ({
   selectedCategory,
   selectedStatus,
   onCategoryChange,
   onStatusChange,
-}) => {
+}: PageHeaderProps) => {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const handleCategories = async () => {
+    try {
+      const response = await getCategories();
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleCategories();
+  }, []);
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
@@ -32,11 +48,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f88326] focus:border-[#f88326] bg-gray-50"
           >
             <option value="all">All Categories</option>
-            <option value="technology">Technology</option>
-            <option value="design">Design</option>
-            <option value="business">Business</option>
-            <option value="lifestyle">Lifestyle</option>
-            <option value="tutorial">Tutorial</option>
+            {categories.map((category) => (
+              <option key={category.name} value={category.name}>
+                {category.name}
+              </option>
+            ))}
           </select>
 
           <select
@@ -47,7 +63,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             <option value="all">All Status</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
-            <option value="pending">Pending Review</option>
           </select>
         </div>
 
