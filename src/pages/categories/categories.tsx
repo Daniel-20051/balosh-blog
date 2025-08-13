@@ -5,7 +5,12 @@ import CategoryGrid from "./components/CategoryGrid";
 import AddCategoryModal from "./components/AddCategoryModal";
 import EditCategoryModal from "./components/EditCategoryModal";
 import DeleteCategoryModal from "./components/DeleteCategoryModal";
-import { getCategories, addCategory, deleteCategory } from "./api";
+import {
+  getCategories,
+  addCategory,
+  deleteCategory,
+  editCategory,
+} from "./api";
 import { getIconById } from "./icons";
 import Toast from "../../components/Toast";
 
@@ -193,8 +198,10 @@ const Categories: React.FC = () => {
         setToastType("error");
         setIsToastVisible(true);
       }
-    } catch (error) {
-      console.error("Error adding category:", error);
+    } catch (error: any) {
+      setToastMessage(error.response.data.message);
+      setToastType("error");
+      setIsToastVisible(true);
     }
   };
 
@@ -204,18 +211,38 @@ const Categories: React.FC = () => {
     description: string,
     isActive: boolean
   ) => {
-    // Update the category in the list
-    setCategories((prevCategories) =>
-      prevCategories.map((cat) => {
-        if (cat.id !== id) return cat;
-        return {
-          ...cat,
-          name,
-          description,
-          isActive,
-        };
-      })
-    );
+    try {
+      const response = await editCategory(
+        id.toString(),
+        name,
+        description,
+        isActive
+      );
+      if (response.success) {
+        setToastMessage("Category updated successfully");
+        setToastType("success");
+        setIsToastVisible(true);
+        setCategories((prevCategories) =>
+          prevCategories.map((cat) => {
+            if (cat.id !== id) return cat;
+            return {
+              ...cat,
+              name,
+              description,
+              isActive,
+            };
+          })
+        );
+      } else {
+        setToastMessage("Failed to update category");
+        setToastType("error");
+        setIsToastVisible(true);
+      }
+    } catch (error: any) {
+      setToastMessage(error.response.data.message);
+      setToastType("error");
+      setIsToastVisible(true);
+    }
   };
 
   const handleDeleteCategory = async (id: number) => {

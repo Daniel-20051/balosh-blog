@@ -305,7 +305,6 @@ const AllBlogs: React.FC = () => {
     metaDescription: string;
   }) => {
     setIsEditLoading(true);
-    console.log(updated);
     const response: any = await editBlog(
       updated.id.toString(),
       updated.featuredImageFile ?? null,

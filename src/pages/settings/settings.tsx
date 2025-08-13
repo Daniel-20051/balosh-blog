@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../contexts/UserContext";
-import { updateUser } from "../../api";
+import { updateUser } from "./api";
 import PageHeader from "./components/PageHeader";
 import ProfilePicture from "./components/ProfilePicture";
 import PersonalInformation from "./components/PersonalInformation";
 import ProfilePreview from "./components/ProfilePreview";
+import Toast from "../../components/Toast";
+import { BASE_URL } from "../../contexts/AuthContext";
 
 const Settings: React.FC = () => {
-  const { user, loading, error, refreshUser } = useUser();
+  const { user, loading, error } = useUser();
 
   // State for profile data
   const [profileImage, setProfileImage] = useState("");
+  const [profileFile, setProfileFile] = useState<File | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -19,10 +22,33 @@ const Settings: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
+
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastVisible(true);
+  };
+
+  // Helper to resolve full URL for profile photo
+  const resolveProfilePhotoUrl = (photo?: string | null): string => {
+    if (!photo) return "";
+    if (/^https?:\/\//i.test(photo)) return photo;
+    const apiRoot = BASE_URL.replace(/\/api\/.*/i, "");
+    if (photo.startsWith("/")) return `${apiRoot}${photo}`;
+    return `${apiRoot}/${photo}`;
+  };
+
   // Initialize form data when user data is loaded
   useEffect(() => {
     if (user) {
-      setProfileImage(user.profilePhoto || "");
+      setProfileImage(resolveProfilePhotoUrl(user.profilePhoto));
       setFirstName(user.firstName);
       setLastName(user.lastName);
       setDisplayName(`${user.firstName} ${user.lastName}`);
@@ -33,6 +59,7 @@ const Settings: React.FC = () => {
   }, [user]);
 
   const handleImageUpload = (file: File) => {
+    setProfileFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
@@ -44,6 +71,7 @@ const Settings: React.FC = () => {
 
   const handleImageRemove = () => {
     setProfileImage("");
+    setProfileFile(null);
   };
 
   const handleSaveChanges = async () => {
@@ -51,8 +79,9 @@ const Settings: React.FC = () => {
 
     // Basic validation
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-      alert(
-        "Please fill in all required fields (First Name, Last Name, and Email)"
+      showToast(
+        "Please fill in all required fields (First Name, Last Name, and Email)",
+        "error"
       );
       return;
     }
@@ -60,7 +89,7 @@ const Settings: React.FC = () => {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address");
+      showToast("Please enter a valid email address", "error");
       return;
     }
 
@@ -73,14 +102,21 @@ const Settings: React.FC = () => {
         username,
         bio,
         email,
+        profilePhoto: profileFile,
       });
 
-      // Refresh user data to get updated information
-      await refreshUser();
-      alert("Changes saved successfully!");
+      showToast("Changes saved successfully!", "success");
     } catch (error) {
+      // Extract a meaningful error message if available
+      let message = "Failed to save changes. Please try again.";
+      const anyError = error as any;
+      if (anyError?.response?.data?.message) {
+        message = anyError.response.data.message as string;
+      } else if (anyError?.message) {
+        message = anyError.message as string;
+      }
       console.error("Failed to save changes:", error);
-      alert("Failed to save changes. Please try again.");
+      showToast(message, "error");
     } finally {
       setIsSaving(false);
     }
@@ -111,6 +147,13 @@ const Settings: React.FC = () => {
   return (
     <div className="max-w-4xl pb-4 mx-auto px-4 sm:px-6 lg:px-8">
       <div className="space-y-4 sm:space-y-6">
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          isVisible={toastVisible}
+          onClose={() => setToastVisible(false)}
+          duration={4000}
+        />
         {/* Page Header */}
         <PageHeader onSaveChanges={handleSaveChanges} isSaving={isSaving} />
 

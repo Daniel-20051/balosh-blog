@@ -55,3 +55,30 @@ export const deleteCategory = async (id: number) => {
         throw error;
     }
 }
+
+export const editCategory = async (
+    id: string,
+    name: string,
+    description: string,
+    isActive: boolean,
+) => {
+    try {
+        const response = await axios.put(
+            `${BASE_URL}/categories/${id}`,
+            {
+                name: name,
+                description: description,
+                isActive: isActive,
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+        );
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
