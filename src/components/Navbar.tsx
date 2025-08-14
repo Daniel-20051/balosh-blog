@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "../contexts/UserContext";
+import { BASE_URL } from "../contexts/AuthContext";
 
 interface NavbarProps {
   isSidebarOpen: boolean;
@@ -13,6 +14,14 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onLogout }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { user, loading, clearUser } = useUser();
+
+  const resolveProfilePhotoUrl = (photo?: string | null): string => {
+    if (!photo) return "";
+    if (/^https?:\/\//i.test(photo)) return photo;
+    const apiRoot = BASE_URL.replace(/\/api\/.*/i, "");
+    if (photo.startsWith("/")) return `${apiRoot}${photo}`;
+    return `${apiRoot}/${photo}`;
+  };
 
   const handleLogout = () => {
     clearUser(); // Clear user data from context
@@ -152,18 +161,27 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onLogout }) => {
             >
               {user ? (
                 <>
-                  <span className="hidden capitalize sm:inline">
-                    {user.firstName}
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {user.role}
                   </span>
+
                   <div className="flex items-center space-x-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {user.role}
+                    <span className="hidden capitalize sm:inline">
+                      {user.firstName}
                     </span>
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <span className="text-sm uppercase font-medium text-gray-600">
-                        {user.firstName.charAt(0)}
-                      </span>
-                    </div>
+                    {user.profilePhoto ? (
+                      <img
+                        src={resolveProfilePhotoUrl(user.profilePhoto)}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <span className="text-sm uppercase font-medium text-gray-600">
+                          {user.firstName.charAt(0)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </>
               ) : (

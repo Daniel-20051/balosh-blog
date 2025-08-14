@@ -9,11 +9,12 @@ import Toast from "../../components/Toast";
 import { BASE_URL } from "../../contexts/AuthContext";
 
 const Settings: React.FC = () => {
-  const { user, loading, error, refreshUser } = useUser();
+  const { user, loading, error, refreshUserSilently } = useUser();
 
   // State for profile data
   const [profileImage, setProfileImage] = useState("");
   const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [isProfilePhotoRemoved, setIsProfilePhotoRemoved] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -21,6 +22,7 @@ const Settings: React.FC = () => {
   const [bio, setBio] = useState("");
   const [email, setEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
@@ -55,11 +57,13 @@ const Settings: React.FC = () => {
       setUsername(user.username);
       setBio(user.bio || "");
       setEmail(user.email);
+      setIsProfilePhotoRemoved(false);
     }
   }, [user]);
 
   const handleImageUpload = (file: File) => {
     setProfileFile(file);
+    setIsProfilePhotoRemoved(false);
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
@@ -72,6 +76,7 @@ const Settings: React.FC = () => {
   const handleImageRemove = () => {
     setProfileImage("");
     setProfileFile(null);
+    setIsProfilePhotoRemoved(true);
   };
 
   const handleSaveChanges = async () => {
@@ -95,16 +100,24 @@ const Settings: React.FC = () => {
 
     setIsSaving(true);
     try {
-      await updateUser({
+      const payload: any = {
         firstName,
         lastName,
         displayName,
         username,
         bio,
         email,
-        profilePhoto: profileFile,
-      });
-      await refreshUser();
+      };
+      if (isProfilePhotoRemoved) {
+        payload.profilePhoto = null;
+      } else if (profileFile instanceof File) {
+        payload.profilePhoto = profileFile;
+      }
+
+      await updateUser(payload);
+      setIsRefreshing(true);
+      await refreshUserSilently();
+      setIsRefreshing(false);
       showToast("Changes saved successfully!", "success");
     } catch (error) {
       // Extract a meaningful error message if available
@@ -120,6 +133,54 @@ const Settings: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const SettingsSkeleton: React.FC = () => {
+    return (
+      <div className="max-w-4xl pb-4 mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="space-y-4 sm:space-y-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-4 sm:space-y-0">
+            <div className="space-y-2 animate-pulse">
+              <div className="h-7 sm:h-8 w-40 sm:w-48 bg-gray-200 rounded" />
+              <div className="h-4 w-56 sm:w-72 bg-gray-200 rounded" />
+            </div>
+            <div className="animate-pulse">
+              <div className="h-10 w-36 bg-gray-200 rounded-lg" />
+            </div>
+          </div>
+
+          {/* Profile Picture Card */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4 animate-pulse">
+            <div className="h-6 w-32 bg-gray-200 rounded" />
+            <div className="flex items-center space-x-6">
+              <div className="h-24 w-24 rounded-full bg-gray-200" />
+              <div className="space-y-2 flex-1">
+                <div className="h-10 w-40 bg-gray-200 rounded" />
+                <div className="h-10 w-28 bg-gray-200 rounded" />
+              </div>
+            </div>
+          </div>
+
+          {/* Personal Information Card */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="space-y-2 animate-pulse">
+                <div className="h-4 w-24 bg-gray-200 rounded" />
+                <div className="h-10 w-full bg-gray-200 rounded" />
+              </div>
+            ))}
+          </div>
+
+          {/* Profile Preview Card */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-3 animate-pulse">
+            <div className="h-6 w-32 bg-gray-200 rounded" />
+            <div className="h-4 w-64 bg-gray-200 rounded" />
+            <div className="h-8 w-48 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -142,6 +203,10 @@ const Settings: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (isRefreshing) {
+    return <SettingsSkeleton />;
   }
 
   return (

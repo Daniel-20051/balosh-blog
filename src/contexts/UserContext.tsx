@@ -24,6 +24,7 @@ interface UserContextType {
   fetchUser: () => Promise<void>;
   clearUser: () => void;
   refreshUser: () => Promise<void>;
+  refreshUserSilently: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -81,6 +82,29 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  // Refresh user data without toggling global loading state
+  const refreshUserSilently = async () => {
+    try {
+      const response = await getUser();
+
+      const userData: User = {
+        id: response.data.user._id,
+        username: response.data.user.username,
+        bio: response.data.user.bio || "",
+        firstName: response.data.user.firstName,
+        lastName: response.data.user.lastName,
+        email: response.data.user.email,
+        role: "admin",
+        profilePhoto: response.data.user.profilePhoto,
+        createdAt: response.data.user.createdAt || new Date().toISOString(),
+        updatedAt: response.data.user.updatedAt || new Date().toISOString(),
+      };
+      setUser(userData);
+    } catch (err) {
+      // keep existing user and error state unchanged for silent refresh
+    }
+  };
+
   // Fetch user on mount only if there's an auth token
   useEffect(() => {
     const token = getAuthToken();
@@ -100,6 +124,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     fetchUser,
     clearUser,
     refreshUser,
+    refreshUserSilently,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

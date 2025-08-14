@@ -35,8 +35,12 @@ export const updateUser = async (userData: {
             payload = formData;
             headers['Content-Type'] = 'multipart/form-data';
         } else {
-            const { profilePhoto: _omit, ...jsonPayload } = userData;
-            payload = jsonPayload;
+            const { profilePhoto, ...jsonPayload } = userData as Record<string, unknown> & { profilePhoto?: File | null };
+            const json: Record<string, unknown> = { ...jsonPayload };
+            if ('profilePhoto' in userData && userData.profilePhoto === null) {
+                json['profilePhoto'] = null;
+            }
+            payload = json;
         }
 
         const response = await axios.put(`${BASE_URL}/auth/profile`, payload, {
