@@ -1,8 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from '../../../contexts/AuthContext';
-import { getCookie } from "../../../utils/cookies";
-
-const token = getCookie("authToken");
+import { getAuthToken } from "../../../utils/cookies";
 export const getBlogs = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/blogs?limit=100`,);
@@ -34,6 +32,10 @@ export const getCategories = async () => {
 export const editBlog = async (
     id: string, featuredImage: File | null, title: string, content: string, excerpt: string, categoryId: string, status: string, tags: string, metaTitle: string, metaDescription: string) => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
       
       const formData = new FormData();
       formData.append('title', title);
@@ -68,6 +70,10 @@ export const editBlog = async (
 
   export const deleteBlog = async (id: string) => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
       const response = await axios.delete(`${BASE_URL}/blogs/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

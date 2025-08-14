@@ -1,8 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from '../../../contexts/AuthContext';
-import { getCookie } from "../../../utils/cookies";
-
-const token = getCookie("authToken");
+import { getAuthToken } from "../../../utils/cookies";
 
 export const getCategories = async () => {
     try {
@@ -21,6 +19,10 @@ export const addCategory = async (
     iconID: number
 ) => {
     try {
+        const token = getAuthToken();
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
         const response = await axios.post(
             `${BASE_URL}/categories`,
             {
@@ -44,6 +46,10 @@ export const addCategory = async (
 
 export const deleteCategory = async (id: number) => {
     try {
+        const token = getAuthToken();
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
         const response = await axios.delete(`${BASE_URL}/categories/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -63,6 +69,10 @@ export const editCategory = async (
     isActive: boolean,
 ) => {
     try {
+        const token = getAuthToken();
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
         const response = await axios.put(
             `${BASE_URL}/categories/${id}`,
             {

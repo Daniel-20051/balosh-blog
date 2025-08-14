@@ -9,7 +9,7 @@ import Toast from "../../components/Toast";
 import { BASE_URL } from "../../contexts/AuthContext";
 
 const Settings: React.FC = () => {
-  const { user, loading, error } = useUser();
+  const { user, loading, error, refreshUser } = useUser();
 
   // State for profile data
   const [profileImage, setProfileImage] = useState("");
@@ -104,7 +104,7 @@ const Settings: React.FC = () => {
         email,
         profilePhoto: profileFile,
       });
-
+      await refreshUser();
       showToast("Changes saved successfully!", "success");
     } catch (error) {
       // Extract a meaningful error message if available

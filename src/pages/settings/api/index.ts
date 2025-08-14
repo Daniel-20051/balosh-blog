@@ -1,8 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../../../contexts/AuthContext";
-import { getCookie } from "../../../utils/cookies";
-
-const token = getCookie("authToken");
+import { getAuthToken } from "../../../utils/cookies";
 
 export const updateUser = async (userData: {
     firstName?: string;
@@ -14,7 +12,7 @@ export const updateUser = async (userData: {
     profilePhoto?: File | null;
 }) => {
     try {
-        
+        const token = getAuthToken();
         if (!token) {
             throw new Error('No authentication token found');
         }

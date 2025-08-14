@@ -1,8 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../../../contexts/AuthContext";
-import { getCookie } from "../../../utils/cookies";
-
-const token = getCookie("authToken");
+import { getAuthToken } from "../../../utils/cookies";
 
 export const getCategories = async () => {
     try {
@@ -18,6 +16,10 @@ export const newBlog = async (
     featuredImage: File, title: string, content: string, excerpt: string, categoryId: string, status: string, tags: string, metaTitle: string, metaDescription: string) => {
       console.log(featuredImage);
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
       
       const formData = new FormData();
       formData.append('title', title);
