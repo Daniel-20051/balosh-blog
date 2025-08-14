@@ -73,12 +73,6 @@ const Settings: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleImageRemove = () => {
-    setProfileImage("");
-    setProfileFile(null);
-    setIsProfilePhotoRemoved(true);
-  };
-
   const handleSaveChanges = async () => {
     if (!user) return;
 
@@ -226,7 +220,6 @@ const Settings: React.FC = () => {
         <ProfilePicture
           currentImageUrl={profileImage}
           onImageUpload={handleImageUpload}
-          onImageRemove={handleImageRemove}
         />
 
         {/* Personal Information Section */}
