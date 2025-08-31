@@ -12,6 +12,7 @@ import Dashboard from "./pages/dashboard/dashboard";
 import NewBlog from "./pages/newblog/newblog";
 import AllBlogs from "./pages/allblogs/allblogs";
 import Categories from "./pages/categories/categories";
+import Application from "./pages/application/application";
 import Settings from "./pages/settings/settings";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AccessDenied from "./pages/access-denied/AccessDenied";
@@ -43,6 +44,7 @@ const App = () => {
               <Route path="new-blog" element={<NewBlog />} />
               <Route path="all-blogs" element={<AllBlogs />} />
               <Route path="categories" element={<Categories />} />
+              <Route path="applications" element={<Application />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 
