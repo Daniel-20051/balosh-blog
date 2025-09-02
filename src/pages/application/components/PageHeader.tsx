@@ -1,5 +1,3 @@
-import React from "react";
-
 const PageHeader = () => {
   return (
     <div className="mb-6">

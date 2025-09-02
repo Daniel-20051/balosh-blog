@@ -12,7 +12,7 @@ import Dashboard from "./pages/dashboard/dashboard";
 import NewBlog from "./pages/newblog/newblog";
 import AllBlogs from "./pages/allblogs/allblogs";
 import Categories from "./pages/categories/categories";
-import Application from "./pages/application/application";
+import Application from "./pages/application/Application";
 import Settings from "./pages/settings/settings";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AccessDenied from "./pages/access-denied/AccessDenied";
